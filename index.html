@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- Household Price Book. Single file, no build step, no network calls except Google Fonts.
+     Opened on its own it saves to this browser (localStorage). Add a LICENSE before publishing. -->
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}</style>
+</head>
+<body>
+<title>Household Price Book</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one column of item cards under a sticky tab bar; forms open as bottom sheets. A shelf-tag yellow chip marks the best unit price; everything else stays quiet. */
+:root{
+  --bg:#EEF1EF; --surface:#FFFFFF; --surface-2:#E5EAE7; --ink:#13201C; --muted:#586964; --line:#D2DAD6;
+  --tag:#FFD43B; --tag-ink:#2A2200;
+  --primary:#13201C; --primary-ink:#FFFFFF;
+  --fresh:#1B6F45; --aging:#8F5A00; --stale:#66756F; --bad:#B3261E;
+  --fresh-bg:#DCF0E4; --aging-bg:#FAEAC6; --stale-bg:#E2E7E4;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Figtree","PingFang HK","Noto Sans HK","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1513; --surface:#172220; --surface-2:#1F2D2A; --ink:#E8F0ED; --muted:#9CAEA7; --line:#2B3B37;
+    --primary:#E8F0ED; --primary-ink:#0F1513;
+    --fresh:#6FD39C; --aging:#F0B54E; --stale:#8FA19A; --bad:#FF8A80;
+    --fresh-bg:#17352A; --aging-bg:#3A2D12; --stale-bg:#222E2B;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1513; --surface:#172220; --surface-2:#1F2D2A; --ink:#E8F0ED; --muted:#9CAEA7; --line:#2B3B37;
+  --primary:#E8F0ED; --primary-ink:#0F1513;
+  --fresh:#6FD39C; --aging:#F0B54E; --stale:#8FA19A; --bad:#FF8A80;
+  --fresh-bg:#17352A; --aging-bg:#3A2D12; --stale-bg:#222E2B;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:720px;margin-inline:auto}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit;color:inherit}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px 10px}
+h1{font-family:var(--display);font-weight:700;font-size:32px;line-height:1;letter-spacing:.01em;text-wrap:balance}
+.pill{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.pill.live{background:var(--fresh-bg);color:var(--fresh)}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:6px;background:var(--bg);margin-inline:-16px;padding:8px 16px;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;min-height:42px;border:0;border-radius:8px;background:transparent;font-weight:600;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--primary);color:var(--primary-ink)}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.toolbar{display:grid;gap:10px;padding-block:14px 4px}
+.tool-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-height:42px;width:100%;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:0 16px;border-radius:8px;border:1px solid var(--primary);background:var(--primary);color:var(--primary-ink);font-weight:600;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.small{min-height:34px;padding:0 12px;font-size:14px}
+.link{background:none;border:0;padding:6px 2px;color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-weight:600;font-size:14px;cursor:pointer}
+.link.danger{color:var(--bad)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{min-height:34px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-size:14px;font-weight:500;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tool-row select{width:auto}
+.grow{flex:1;min-width:140px}
+main{padding-block:12px;display:grid;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;min-width:0}
+.card.is-example{border-style:dashed}
+.card-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.ttl{min-width:0}
+.card h2{font-size:18px;font-weight:700;line-height:1.25;overflow-wrap:anywhere}
+.sub{font-size:13px;color:var(--muted)}
+.listbtn{flex:none;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:transparent;font-size:13px;font-weight:600;cursor:pointer}
+.listbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.best{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:baseline;gap:4px;background:var(--tag);color:var(--tag-ink);font-family:var(--display);font-weight:700;font-size:34px;line-height:1;padding:6px 12px 6px 10px;border-radius:4px;font-variant-numeric:tabular-nums}
+.tag small{font-size:15px;font-weight:600;letter-spacing:.02em}
+.best-meta{font-size:14px;font-weight:600}
+.spread{font-size:13px;color:var(--muted)}
+.offers{list-style:none;margin:0;padding:0}
+.offer{display:grid;gap:2px;padding-block:9px;border-top:1px solid var(--line)}
+.offer.stale{opacity:.62}
+.o-main,.o-sub{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.o-shop{font-weight:600}
+.mini{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-left:6px}
+.o-price{font-family:var(--display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
+.o-price span{font-family:var(--body);font-weight:500;font-size:13px;color:var(--muted);margin-left:6px}
+.o-unit{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.o-act{display:flex;gap:10px;align-items:center}
+.age{font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px}
+.age.fresh{background:var(--fresh-bg);color:var(--fresh)}
+.age.aging{background:var(--aging-bg);color:var(--aging)}
+.age.stale{background:var(--stale-bg);color:var(--stale)}
+.foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:10px}
+.hist{display:grid;gap:0;font-size:13px}
+.hist-row{display:flex;justify-content:space-between;gap:10px;padding-block:6px;border-top:1px dashed var(--line);align-items:center}
+.hist-row span{min-width:0;overflow-wrap:anywhere}
+.banner{background:var(--surface-2);border-radius:10px;padding:12px 14px;display:grid;gap:8px;font-size:14px}
+.banner strong{font-weight:700}
+.empty{text-align:center;padding:36px 12px;display:grid;gap:10px;justify-items:center;color:var(--muted)}
+.empty h2{color:var(--ink);font-size:20px}
+.muted{color:var(--muted)}
+.sec{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.01em}
+.needs{list-style:none;margin:0;padding:0;display:grid}
+.needs li{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-block:8px;border-top:1px solid var(--line)}
+.needs li:first-child{border-top:0}
+.n-name{font-weight:600;min-width:0;flex:1 1 140px;overflow-wrap:anywhere}
+.n-in{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--muted)}
+.n-in input{width:96px}
+.total{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.save{font-weight:600}
+.grp{display:grid;gap:4px;border-top:1px solid var(--line);padding-top:10px}
+.grp-h{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.grp-h h3{font-size:16px;font-weight:700}
+.grp-h span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.line{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding-block:3px}
+.line span:first-child{min-width:0;overflow-wrap:anywhere}
+.line b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.warn{font-size:13px;color:var(--aging)}
+.plans{width:100%;border-collapse:collapse;font-size:14px}
+.plans td{padding:6px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.plans td:last-child{text-align:right;font-weight:600}
+.shop{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.shop:first-of-type{border-top:0;padding-top:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f{display:grid;gap:4px;min-width:0}
+.f>span,legend{font-size:13px;font-weight:600;color:var(--muted)}
+.inline{display:flex;gap:6px}
+.inline select{width:84px;flex:none}
+fieldset{border:0;padding:0;margin:0;min-width:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.seg label{position:relative}
+.seg input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.seg span{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:99px;font-size:14px;font-weight:500}
+.seg input:checked+span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg input:focus-visible+span{outline:3px solid var(--ink);outline-offset:2px}
+.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,16,14,.55)}
+.panel{background:var(--surface);width:100%;max-width:560px;max-height:92%;overflow:auto;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:14px;align-content:start}
+@media (min-width:640px){.sheet{align-items:center}.panel{border-radius:16px}}
+.panel h2{font-family:var(--display);font-size:26px;font-weight:700}
+.panel h3{font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.row-end{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.err{color:var(--bad);font-size:14px;min-height:0}
+.err:empty{display:none}
+.srow{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.srow-h{display:flex;gap:10px;align-items:center}
+.srow-h input[type=checkbox]{width:22px;height:22px;min-height:0;flex:none}
+.grid3{display:grid;grid-template-columns:1fr 70px 1.4fr;gap:8px}
+textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+.spin{width:28px;height:28px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--ink);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--primary);color:var(--primary-ink);padding:10px 16px;border-radius:99px;font-weight:600;font-size:14px;z-index:30;max-width:calc(100% - 32px);text-align:center}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <h1>Household Price Book</h1>
+    <span id="sync" class="pill">Loading</span>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" data-tab="items" aria-selected="true">Items</button>
+    <button role="tab" data-tab="basket" aria-selected="false">Basket</button>
+    <button role="tab" data-tab="shops" aria-selected="false">Shops &amp; backup</button>
+  </nav>
+  <div id="toolbar" class="toolbar">
+    <input id="q" type="search" placeholder="Search items, brands, 搜尋…" autocomplete="off" aria-label="Search items">
+    <div class="tool-row">
+      <button id="btn-add" class="btn" type="button">+ Add item</button>
+      <button id="btn-scan" class="btn ghost" type="button" hidden>Scan photo</button>
+      <select id="sort" aria-label="Sort items">
+        <option value="savings">Biggest price gap</option>
+        <option value="name">A to Z</option>
+        <option value="stale">Oldest prices first</option>
+      </select>
+    </div>
+    <div class="chips" id="chips">
+      <button class="chip" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" data-f="list" aria-pressed="false">On my list</button>
+      <button class="chip" data-f="recheck" aria-pressed="false">Needs recheck</button>
+    </div>
+  </div>
+  <main id="view"></main>
+</div>
+
+<div id="sheet" class="sheet" hidden><div class="panel" role="dialog" aria-modal="true"></div></div>
+<div id="toast" class="toast" role="status" hidden></div>
+<input type="file" id="photo" accept="image/*" hidden>
+<input type="file" id="restore" accept="application/json,.json" hidden>
+
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>ymd(new Date());
+const UNITS={w:['g','kg'],v:['ml','L'],c:['pc']};
+const FACTOR={g:1,kg:1000,ml:1,L:1000,pc:1};
+const TYPE_OF={g:'w',kg:'w',ml:'v',L:'v',pc:'c'};
+const PER={w:{n:100,label:'/100g',base:'g'},v:{n:100,label:'/100ml',base:'ml'},c:{n:1,label:'/pc',base:'pc'}};
+const TYPE_LABEL={w:'compared by weight',v:'compared by volume',c:'compared by count'};
+const STALE_DAYS=30, FRESH_DAYS=14;
+const DEFAULT_SHOPS=[
+  {id:'hktvmall',name:'HKTVmall',kind:'online',fee:0,freeAbove:0},
+  {id:'watsons',name:'Watsons',kind:'store',fee:0,freeAbove:0},
+  {id:'mannings',name:'Mannings',kind:'store',fee:0,freeAbove:0},
+  {id:'wellcome',name:'Wellcome',kind:'store',fee:0,freeAbove:0},
+  {id:'parknshop',name:'ParknShop',kind:'store',fee:0,freeAbove:0}
+];
+const LS_KEY='household-price-book-v1';
+
+const S={items:[],shops:DEFAULT_SHOPS.map(s=>({...s})),tab:'items',q:'',sort:'savings',filter:'all',
+  open:new Set(),confirm:null,ready:false,mode:'local',db:null,sample:null,dl:null,canScan:false,syncErr:false,
+  sheetCtl:null,scanCtl:null,scan:null};
+
+/* ---------- formatting ---------- */
+const fmt=n=>{const r=Math.round(n*100)/100;if(Number.isInteger(r))return String(r);return Math.abs(r*10-Math.round(r*10))<1e-9?r.toFixed(1):r.toFixed(2)};
+const hk=n=>'HK$'+fmt(n);
+const packText=o=>(o.packs>1?o.packs+'×':'')+fmt(o.qty)+o.unit;
+const shopOf=id=>S.shops.find(s=>s.id===id)||DEFAULT_SHOPS.find(s=>s.id===id)||{id,name:'Removed shop',kind:'store',fee:0,freeAbove:0};
+
+/* ---------- ages ---------- */
+function ageDays(date){const a=new Date(date+'T00:00:00'),b=new Date(today()+'T00:00:00');const n=Math.round((b-a)/864e5);return isNaN(n)?0:Math.max(0,n)}
+const freshness=a=>a<=FRESH_DAYS?'fresh':a<=STALE_DAYS?'aging':'stale';
+const ageText=a=>a===0?'today':a<14?a+'d ago':a<60?Math.round(a/7)+'w ago':Math.round(a/30)+'mo ago';
+
+/* ---------- price maths ---------- */
+function offersFor(it){
+  const latest=new Map();
+  const sorted=(it.prices||[]).slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.t||0)-(b.t||0));
+  for(const p of sorted)latest.set(p.shop+'|'+p.base,p);
+  return [...latest.values()].map(p=>({...p,unit:p.price/p.base}));
+}
+function analyze(it){
+  const offers=offersFor(it).sort((a,b)=>a.unit-b.unit);
+  const best=offers[0],worst=offers[offers.length-1];
+  const spread=offers.length>1?1-best.unit/worst.unit:0;
+  const oldest=offers.reduce((m,o)=>Math.max(m,ageDays(o.date)),0);
+  return {offers,best,worst,spread,oldest};
+}
+const perUnit=(o,type)=>o.unit*PER[type].n;
+const needOf=it=>it.need>0?it.need:(analyze(it).best?.base||1);
+
+function optionFor(it,shopId){
+  const need=needOf(it);let best=null;
+  for(const o of offersFor(it)){
+    if(o.shop!==shopId)continue;
+    const n=Math.max(1,Math.ceil(need/o.base-1e-9)),cost=n*o.price;
+    if(!best||cost<best.cost-1e-9||(Math.abs(cost-best.cost)<1e-9&&n<best.n))best={o,n,cost};
+  }
+  return best;
+}
+function delivery(shop,sub){
+  if(shop.kind!=='online')return 0;
+  if(shop.freeAbove>0&&sub>=shop.freeAbove)return 0;
+  return shop.fee||0;
+}
+function assign(list,allowed){
+  const by=new Map(),un=[];
+  for(const it of list){
+    let pick=null;
+    for(const sid of allowed){const o=optionFor(it,sid);if(o&&(!pick||o.cost<pick.o.cost-1e-9))pick={sid,o}}
+    if(!pick){un.push(it);continue}
+    if(!by.has(pick.sid))by.set(pick.sid,[]);
+    by.get(pick.sid).push({it,...pick.o});
+  }
+  let total=0,del=0;const groups=[];
+  for(const [sid,rows] of by){
+    const sub=rows.reduce((s,r)=>s+r.cost,0),d=delivery(shopOf(sid),sub);
+    groups.push({sid,rows,sub,d});total+=sub+d;del+=d;
+  }
+  return {groups,un,total,del};
+}
+function compute(list){
+  const ids=S.shops.map(s=>s.id);
+  const singles=[];
+  for(const id of ids){const a=assign(list,[id]);if(!a.un.length)singles.push({sid:id,total:a.total,del:a.del,plan:a})}
+  singles.sort((a,b)=>a.total-b.total);
+  let allowed=ids.slice(),cur=assign(list,allowed),improved=true;
+  while(improved){
+    improved=false;
+    for(const g of cur.groups){
+      const a2=assign(list,allowed.filter(x=>x!==g.sid));
+      if(a2.un.length<=cur.un.length&&a2.total<cur.total-1e-9){allowed=allowed.filter(x=>x!==g.sid);cur=a2;improved=true;break}
+    }
+  }
+  if(!cur.un.length&&singles.length&&singles[0].total<cur.total-1e-9)cur=singles[0].plan;
+  return {mix:cur,singles};
+}
+
+/* ---------- sanitising (storage, backups, scans) ---------- */
+const num=(v,d=0)=>Number.isFinite(+v)?+v:d;
+function cleanPrice(p){
+  const unit=FACTOR[p?.unit]?p.unit:null;
+  const price=num(p?.price),packs=Math.max(1,Math.round(num(p?.packs,1))),qty=num(p?.qty);
+  if(!unit||!(price>0)||!(qty>0)||!p.shop)return null;
+  const date=/^\d{4}-\d{2}-\d{2}$/.test(p.date)?p.date:today();
+  return {id:String(p.id||uid()),t:num(p.t,Date.now()),shop:String(p.shop),price,packs,qty,unit,base:packs*qty*FACTOR[unit],date,note:String(p.note||'').slice(0,100)};
+}
+function cleanItem(x){
+  if(!x||typeof x!=='object'||!x.name)return null;
+  const type=['w','v','c'].includes(x.type)?x.type:null;if(!type)return null;
+  const prices=(Array.isArray(x.prices)?x.prices:[]).map(cleanPrice).filter(p=>p&&TYPE_OF[p.unit]===type);
+  return {id:String(x.id||uid()),name:String(x.name).slice(0,120),brand:String(x.brand||'').slice(0,60),origin:String(x.origin||'').slice(0,60),type,onList:!!x.onList,need:Math.max(0,num(x.need)),prices:prices.slice(-80),created:num(x.created,Date.now())};
+}
+function cleanShop(s){
+  if(!s||!s.id||!s.name)return null;
+  return {id:String(s.id),name:String(s.name).slice(0,40),kind:s.kind==='online'?'online':'store',fee:Math.max(0,num(s.fee)),freeAbove:Math.max(0,num(s.freeAbove))};
+}
+
+/* ---------- storage ---------- */
+function lsLoad(){try{const r=JSON.parse(localStorage.getItem(LS_KEY)||'null');return r&&typeof r==='object'?r:null}catch{return null}}
+function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({items:S.items,shops:S.shops}))}catch{}}
+const chains=new Map();
+function enqueue(key,fn){const prev=chains.get(key)||Promise.resolve();const next=prev.catch(()=>{}).then(fn);chains.set(key,next);return next}
+function fail(e){toast(e&&e.code==='invalid_argument'?'You can view this book but not change it. Ask the owner for Contributor access.':'Could not save. Check your connection and try again.')}
+async function saveItem(it){
+  if(S.mode==='shared'){try{await enqueue('i:'+it.id,()=>S.db.collection('items').doc(it.id).set(JSON.parse(JSON.stringify(it))))}catch(e){fail(e)}}
+  else lsSave();
+}
+async function removeItem(id){
+  S.items=S.items.filter(i=>i.id!==id);
+  if(S.mode==='shared'){try{await enqueue('i:'+id,()=>S.db.collection('items').doc(id).delete())}catch(e){fail(e)}}
+  else lsSave();
+}
+async function saveShops(){
+  if(S.mode==='shared'){try{await enqueue('shops',()=>S.db.doc('meta/shops').set({list:JSON.parse(JSON.stringify(S.shops))}))}catch(e){fail(e)}}
+  else lsSave();
+}
+function commit(it){saveItem(it);render()}
+
+/* ---------- toast ---------- */
+let toastTimer=0;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true},3600)}
+
+/* ---------- examples (shown only while the book is empty) ---------- */
+function examples(){
+  const mk=(shop,price,packs,qty,unit,ago,note)=>{const d=new Date();d.setDate(d.getDate()-ago);return {id:uid(),t:Date.now()-ago*864e5,shop,price,packs,qty,unit,base:packs*qty*FACTOR[unit],date:ymd(d),note:note||''}};
+  return [
+    {id:'ex1',name:'Throat candy bag',brand:'Example brand',origin:'',type:'w',onList:false,need:0,prices:[mk('hktvmall',34,1,150,'g',2),mk('watsons',24.9,1,150,'g',9),mk('mannings',19.9,1,150,'g',41)]},
+    {id:'ex2',name:'Laundry liquid',brand:'Example brand',origin:'',type:'v',onList:false,need:0,prices:[mk('hktvmall',79.9,1,3,'L',3),mk('watsons',52,1,1800,'ml',5),mk('mannings',84.9,1,3,'L',12)]},
+    {id:'ex3',name:'Toilet tissue',brand:'Example brand',origin:'',type:'c',onList:false,need:0,prices:[mk('hktvmall',48,1,24,'pc',1),mk('wellcome',55,1,24,'pc',6)]}
+  ];
+}
+
+/* ---------- views ---------- */
+function offerRow(o,type,i,stale,editable,itemId){
+  const per=PER[type],a=ageDays(o.date),f=freshness(a),sh=shopOf(o.shop);
+  return `<li class="offer ${stale?'stale':''}">
+    <div class="o-main"><span class="o-shop">${esc(sh.name)}<span class="mini">${sh.kind==='online'?'Delivers':'In store'}</span></span>
+    <span class="o-price">${hk(o.price)}<span>${esc(packText(o))}</span></span></div>
+    <div class="o-sub"><span class="o-unit">${hk(perUnit(o,type))}${per.label}${o.note?' · '+esc(o.note):''}</span>
+    <span class="o-act"><span class="age ${f}">${ageText(a)}${f==='stale'?' · recheck':''}</span>${editable?`<button class="link" data-act="upd" data-id="${esc(itemId)}" data-pid="${esc(o.id)}">Update</button>`:''}</span></div>
+  </li>`;
+}
+function card(it,a,ex){
+  const per=PER[it.type],open=S.open.has(it.id);
+  const bestAge=a.best?ageDays(a.best.date):0;
+  const meta=[it.brand,it.origin&&('Made in '+it.origin),TYPE_LABEL[it.type]].filter(Boolean).map(esc).join(' · ');
+  let h=`<article class="card ${ex?'is-example':''}"><div class="card-h"><div class="ttl"><h2>${esc(it.name)}</h2><p class="sub">${meta}</p></div>`;
+  if(!ex)h+=`<button class="listbtn" data-act="list" data-id="${esc(it.id)}" aria-pressed="${!!it.onList}">${it.onList?'On list':'Add to list'}</button>`;
+  h+='</div>';
+  if(a.best){
+    h+=`<div class="best"><span class="tag"><small>HK$</small>${fmt(perUnit(a.best,it.type))}<small>${per.label}</small></span><span class="best-meta">${esc(shopOf(a.best.shop).name)} · ${ageText(bestAge)}</span></div>`;
+    if(a.offers.length>1)h+=`<p class="spread">Cheapest is ${Math.round(a.spread*100)}% below the priciest${bestAge>STALE_DAYS?'. The best price is old, recheck it.':'.'}</p>`;
+    h+=`<ul class="offers">${a.offers.map((o,i)=>offerRow(o,it.type,i,ageDays(o.date)>STALE_DAYS,!ex,it.id)).join('')}</ul>`;
+  }else h+='<p class="muted">No prices yet.</p>';
+  if(!ex){
+    h+=`<div class="foot"><button class="btn small" data-act="addprice" data-id="${esc(it.id)}">Add price</button><button class="link" data-act="toggle" data-id="${esc(it.id)}">${open?'Hide details':'Details'}</button></div>`;
+    if(open){
+      const hist=(it.prices||[]).slice().sort((x,y)=>x.date<y.date?1:x.date>y.date?-1:(y.t||0)-(x.t||0));
+      h+=`<div class="hist">${hist.map(p=>`<div class="hist-row"><span>${esc(p.date)} · ${esc(shopOf(p.shop).name)} · ${hk(p.price)} · ${esc(packText(p))}${p.note?' · '+esc(p.note):''}</span><button class="link danger" data-act="histdel" data-id="${esc(it.id)}" data-pid="${esc(p.id)}" aria-label="Delete this price">Delete</button></div>`).join('')||'<p class="muted">No history.</p>'}</div>
+      <div class="foot"><button class="link" data-act="edit" data-id="${esc(it.id)}">Edit item</button><button class="link danger" data-act="del" data-id="${esc(it.id)}">${S.confirm===it.id?'Tap again to delete':'Delete item'}</button></div>`;
+    }
+  }
+  return h+'</article>';
+}
+function viewItems(){
+  if(!S.ready)return '<p class="muted">Loading your price book…</p>';
+  const ex=!S.items.length;
+  let rows=(ex?examples():S.items).map(it=>({it,a:analyze(it)}));
+  const q=S.q.trim().toLowerCase();
+  if(q)rows=rows.filter(({it})=>(it.name+' '+(it.brand||'')+' '+(it.origin||'')).toLowerCase().includes(q));
+  if(S.filter==='list')rows=rows.filter(r=>r.it.onList);
+  if(S.filter==='recheck')rows=rows.filter(r=>r.a.oldest>STALE_DAYS);
+  if(S.sort==='name')rows.sort((x,y)=>x.it.name.localeCompare(y.it.name));
+  else if(S.sort==='stale')rows.sort((x,y)=>y.a.oldest-x.a.oldest);
+  else rows.sort((x,y)=>y.a.spread-x.a.spread);
+  let h='';
+  if(ex)h+=`<div class="banner"><strong>These are example items.</strong><span>They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.</span></div>`;
+  if(!rows.length)h+=`<div class="empty"><h2>Nothing here</h2><p>${S.filter==='list'?'No items are on your list yet.':S.filter==='recheck'?'Every price is under '+STALE_DAYS+' days old.':'No items match your search.'}</p></div>`;
+  else h+=rows.map(({it,a})=>card(it,a,ex)).join('');
+  return h;
+}
+function viewBasket(){
+  if(!S.ready)return '<p class="muted">Loading…</p>';
+  const list=S.items.filter(i=>i.onList);
+  if(!list.length)return `<div class="empty"><h2>Your basket is empty</h2><p>Choose “Add to list” on items you buy regularly. The basket then works out the cheapest place for each one, and whether splitting the order across shops beats one delivery.</p><button class="btn" data-act="gotoitems">Go to items</button></div>`;
+  const ul={w:'g',v:'ml',c:'pc'};
+  const needs=list.map(it=>`<li><span class="n-name">${esc(it.name)}</span><label class="n-in">Need <input type="number" min="1" step="any" inputmode="decimal" data-need="${esc(it.id)}" value="${fmt(needOf(it))}" aria-label="Amount needed of ${esc(it.name)}"> ${ul[it.type]}</label><button class="link" data-act="list" data-id="${esc(it.id)}">Remove</button></li>`).join('');
+  const {mix,singles}=compute(list);
+  let h=`<section class="card"><h2 class="sec">Shopping list</h2><ul class="needs">${needs}</ul><p class="spread">Amounts are rounded up to whole packs when pricing.</p></section>`;
+  const stale=mix.groups.reduce((n,g)=>n+g.rows.filter(r=>ageDays(r.o.date)>STALE_DAYS).length,0);
+  h+=`<section class="card"><h2 class="sec">Cheapest way to buy this list</h2><div class="total"><span class="big">${hk(mix.total)}</span><span class="muted">${mix.del>0?'items '+hk(mix.total-mix.del)+' + delivery '+hk(mix.del):'no delivery fees counted'}</span></div>`;
+  if(singles.length){
+    const s0=singles[0],gap=s0.total-mix.total;
+    h+=gap>0.5?`<p class="save">Splitting saves ${hk(gap)} versus buying everything at ${esc(shopOf(s0.sid).name)}.</p>`:`<p class="save">Buying everything at ${esc(shopOf(s0.sid).name)} is already the cheapest option.</p>`;
+  }
+  h+=mix.groups.sort((a,b)=>b.sub-a.sub).map(g=>{const sh=shopOf(g.sid);return `<div class="grp"><div class="grp-h"><h3>${esc(sh.name)}</h3><span>${hk(g.sub)}${g.d>0?' + '+hk(g.d)+' delivery':''}</span></div>${g.rows.map(r=>`<div class="line"><span>${r.n>1?r.n+' × ':''}${esc(r.it.name)} <span class="muted">${esc(packText(r.o))}${ageDays(r.o.date)>STALE_DAYS?' · old price':''}</span></span><b>${hk(r.cost)}</b></div>`).join('')}</div>`}).join('');
+  if(mix.un.length)h+=`<p class="warn">No price yet for: ${mix.un.map(i=>esc(i.name)).join(', ')}.</p>`;
+  if(stale)h+=`<p class="warn">${stale} price${stale>1?'s are':' is'} older than ${STALE_DAYS} days. Recheck before you order.</p>`;
+  if(singles.length>1)h+=`<table class="plans" aria-label="Single shop totals"><tbody>${singles.map(s=>`<tr><td>All at ${esc(shopOf(s.sid).name)}</td><td>${hk(s.total)}</td></tr>`).join('')}</tbody></table>`;
+  h+=`<p class="spread">Delivery fees apply to online shops only, using the amounts in Shops &amp; backup. Store trips count as free.</p></section>`;
+  return h;
+}
+function viewShops(){
+  if(!S.ready)return '<p class="muted">Loading…</p>';
+  const used=id=>S.items.reduce((n,it)=>n+it.prices.filter(p=>p.shop===id).length,0);
+  const rows=S.shops.map(s=>{const u=used(s.id);return `<div class="shop">
+    <div class="grid2"><label class="f"><span>Shop name</span><input data-shop="${esc(s.id)}" data-k="name" value="${esc(s.name)}"></label>
+    <label class="f"><span>Type</span><select data-shop="${esc(s.id)}" data-k="kind"><option value="store" ${s.kind==='store'?'selected':''}>Physical store</option><option value="online" ${s.kind==='online'?'selected':''}>Online, delivers</option></select></label></div>
+    ${s.kind==='online'?`<div class="grid2"><label class="f"><span>Delivery fee (HK$)</span><input type="number" min="0" step="any" inputmode="decimal" data-shop="${esc(s.id)}" data-k="fee" value="${s.fee||0}"></label>
+    <label class="f"><span>Free delivery from (HK$, 0 = never)</span><input type="number" min="0" step="any" inputmode="decimal" data-shop="${esc(s.id)}" data-k="freeAbove" value="${s.freeAbove||0}"></label></div>`:''}
+    <div>${u?`<span class="spread">Used by ${u} price${u>1?'s':''}</span>`:`<button class="link danger" data-act="shopdel" data-id="${esc(s.id)}">Remove shop</button>`}</div></div>`}).join('');
+  const where=S.mode==='shared'?'Your items are saved to the shared book, so everyone with access sees updates live.':'Your items are saved in this browser only. Download a backup now and then.';
+  return `<section class="card"><h2 class="sec">Shops</h2><p class="spread">Enter each online shop's usual delivery fee and free-delivery minimum so the basket compares real totals.</p>${rows}
+    <div class="shop"><div class="grid2"><label class="f"><span>New shop</span><input id="ns-name" placeholder="e.g. Donki, 惠康"></label><label class="f"><span>Type</span><select id="ns-kind"><option value="store">Physical store</option><option value="online">Online, delivers</option></select></label></div><div><button class="btn small" data-act="shopadd">Add shop</button></div></div></section>
+    <section class="card"><h2 class="sec">Backup</h2><p class="spread">${where}</p><div class="foot">${S.dl?'<button class="btn small" data-act="dl">Download backup</button>':''}<button class="btn small ghost" data-act="copy">Copy backup</button><button class="btn small ghost" data-act="restore">Restore from file</button></div></section>`;
+}
+
+let pendingRender=false;
+function syncToolbar(){$('#btn-scan').hidden=!S.canScan}
+function render(remote){
+  const ae=document.activeElement;
+  if(remote&&ae&&$('#view').contains(ae)&&/INPUT|SELECT/.test(ae.tagName)){pendingRender=true;return}
+  const sync=$('#sync');
+  sync.textContent=S.syncErr?'Sync paused':S.mode==='shared'?'Shared · live':'This device only';
+  sync.className='pill'+(S.mode==='shared'&&!S.syncErr?' live':'');
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
+  $('#toolbar').hidden=S.tab!=='items';
+  syncToolbar();
+  $('#view').innerHTML=S.tab==='items'?viewItems():S.tab==='basket'?viewBasket():viewShops();
+}
+
+/* ---------- sheets ---------- */
+function openSheet(html,setup){
+  if(S.sheetCtl)S.sheetCtl.abort();
+  S.sheetCtl=new AbortController();
+  const sig={signal:S.sheetCtl.signal},p=$('#sheet .panel');
+  p.innerHTML=html;delete p.dataset.review;
+  p.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeSheet()},sig);
+  $('#sheet').hidden=false;document.body.style.overflow='hidden';
+  if(setup)setup(p,sig);
+  p.scrollTop=0;
+  const f=p.querySelector('[autofocus]');if(f)f.focus();
+}
+function closeSheet(){
+  if(S.scanCtl){S.scanCtl.abort();S.scanCtl=null}
+  if(S.sheetCtl){S.sheetCtl.abort();S.sheetCtl=null}
+  $('#sheet').hidden=true;document.body.style.overflow='';S.scan=null;
+}
+const unitOpts=(type,sel)=>UNITS[type].map(u=>`<option ${u===sel?'selected':''}>${u}</option>`).join('');
+function priceForm(type,v={}){
+  const shops=S.shops.map(s=>`<option value="${esc(s.id)}" ${s.id===v.shop?'selected':''}>${esc(s.name)}</option>`).join('');
+  return `<div class="grid2">
+    <label class="f"><span>Shop</span><select id="f-shop">${shops}</select></label>
+    <label class="f"><span>Price (HK$)</span><input id="f-price" type="number" inputmode="decimal" step="0.01" min="0" value="${v.price??''}" ${v.focusPrice?'autofocus':''}></label>
+    <label class="f"><span>Packs at this price</span><input id="f-packs" type="number" inputmode="numeric" step="1" min="1" value="${v.packs??1}"></label>
+    <label class="f"><span>Size of one pack</span><div class="inline"><input id="f-qty" type="number" inputmode="decimal" step="any" min="0" value="${v.qty??''}"><select id="f-unit">${unitOpts(type,v.unit)}</select></div></label>
+    <label class="f"><span>Date seen</span><input id="f-date" type="date" value="${esc(v.date||today())}"></label>
+    <label class="f"><span>Note</span><input id="f-note" placeholder="member price, 2 for $30…" value="${esc(v.note||'')}"></label></div>`;
+}
+function readPriceForm(){
+  const price=parseFloat($('#f-price').value),packs=Math.max(1,parseInt($('#f-packs').value)||1),qty=parseFloat($('#f-qty').value);
+  if(!(price>0))return {error:'Enter the price.'};
+  if(!(qty>0))return {error:'Enter the size of one pack, for example 500 ml.'};
+  return cleanPrice({id:uid(),t:Date.now(),shop:$('#f-shop').value,price,packs,qty,unit:$('#f-unit').value,date:$('#f-date').value||today(),note:$('#f-note').value.trim()})||{error:'Check the price and size.'};
+}
+function addEntry(it,e){
+  it.prices=(it.prices||[]).filter(p=>!(p.shop===e.shop&&p.base===e.base&&p.date===e.date));
+  it.prices.push(e);
+  it.prices.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.t||0)-(b.t||0));
+  if(it.prices.length>80)it.prices=it.prices.slice(-80);
+}
+function addSheet(){
+  openSheet(`<h2>Add item</h2><form id="frm" class="panel-form" style="display:grid;gap:14px">
+    <label class="f"><span>Item name</span><input id="f-name" required autocomplete="off" placeholder="e.g. Throat candy, 潤喉糖" autofocus></label>
+    <div class="grid2"><label class="f"><span>Brand</span><input id="f-brand" autocomplete="off"></label><label class="f"><span>Made in (optional)</span><input id="f-origin" autocomplete="off"></label></div>
+    <fieldset><legend>Compare by</legend><div class="seg">
+      <label><input type="radio" name="type" value="w" checked><span>Weight (g, kg)</span></label>
+      <label><input type="radio" name="type" value="v"><span>Volume (ml, L)</span></label>
+      <label><input type="radio" name="type" value="c"><span>Count (pieces)</span></label></div></fieldset>
+    <h3>First price</h3>${priceForm('w')}
+    <p class="err" id="err" role="alert"></p>
+    <div class="row-end"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn" type="submit">Save item</button></div></form>`,(p,sig)=>{
+    p.addEventListener('change',e=>{if(e.target.name==='type')$('#f-unit').innerHTML=unitOpts(e.target.value)},sig);
+    p.addEventListener('submit',e=>{
+      e.preventDefault();
+      const name=$('#f-name').value.trim();if(!name){$('#err').textContent='Enter the item name.';return}
+      const r=readPriceForm();if(r.error){$('#err').textContent=r.error;return}
+      const type=p.querySelector('input[name=type]:checked').value;
+      const it={id:uid(),name,brand:$('#f-brand').value.trim(),origin:$('#f-origin').value.trim(),type,onList:false,need:0,prices:[r],created:Date.now()};
+      S.items.push(it);saveItem(it);S.tab='items';closeSheet();render();toast('Item added');
+    },sig);
+  });
+}
+function priceSheet(it,pid){
+  const offers=offersFor(it),ref=offers.find(o=>o.id===pid)||offers.sort((a,b)=>a.unit-b.unit)[0]||{};
+  openSheet(`<h2>${pid?'Update price':'Add price'}</h2><p class="sub">${esc(it.name)}${it.brand?' · '+esc(it.brand):''}</p><form id="frm" style="display:grid;gap:14px">
+    ${priceForm(it.type,{shop:ref.shop,packs:ref.packs,qty:ref.qty,unit:ref.unit,focusPrice:true})}
+    <p class="err" id="err" role="alert"></p>
+    <div class="row-end"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn" type="submit">Save price</button></div></form>`,(p,sig)=>{
+    p.addEventListener('submit',e=>{
+      e.preventDefault();const r=readPriceForm();if(r.error){$('#err').textContent=r.error;return}
+      addEntry(it,r);commit(it);closeSheet();toast('Price saved');
+    },sig);
+  });
+}
+function editSheet(it){
+  openSheet(`<h2>Edit item</h2><form id="frm" style="display:grid;gap:14px">
+    <label class="f"><span>Item name</span><input id="f-name" required value="${esc(it.name)}" autofocus></label>
+    <div class="grid2"><label class="f"><span>Brand</span><input id="f-brand" value="${esc(it.brand)}"></label><label class="f"><span>Made in</span><input id="f-origin" value="${esc(it.origin)}"></label></div>
+    <p class="sub">${TYPE_LABEL[it.type][0].toUpperCase()+TYPE_LABEL[it.type].slice(1)}. To change this, add a new item.</p>
+    <div class="row-end"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn" type="submit">Save</button></div></form>`,(p,sig)=>{
+    p.addEventListener('submit',e=>{e.preventDefault();const n=$('#f-name').value.trim();if(!n)return;it.name=n;it.brand=$('#f-brand').value.trim();it.origin=$('#f-origin').value.trim();commit(it);closeSheet()},sig);
+  });
+}
+
+/* ---------- photo scan ---------- */
+const scanErr=c=>({not_granted:'Photo reading was not allowed for this page.',rate_limited:'Too many requests right now. Try again in a minute.',image_rejected:'That image could not be used. Try another photo.',invalid_json:'Could not find prices in that photo. Try a closer, sharper shot of the tag or receipt.',refused:'Claude could not read that photo.',empty_completion:'Nothing readable came back. Try a closer photo.',session_expired:'Sign in again to read photos.'}[c]||'Photo reading failed. Try again.');
+function buildPrompt(){
+  const items=S.items.slice(0,200).map(i=>i.id+': '+i.name+(i.brand?' ('+i.brand+')':'')+' ['+TYPE_LABEL[i.type]+']').join('\n')||'(none yet)';
+  const shops=S.shops.map(s=>s.name).join(', ');
+  return `You are reading a photo taken in Hong Kong. It shows a supermarket or pharmacy shelf price tag, a product package, or a shop receipt. Names may be in Chinese or English; keep product names as printed.
+
+Existing items in the user's price book (id: name [how it is compared]):
+${items}
+
+Known shops: ${shops}
+
+Reply with only this JSON, no other text:
+{"shop": one of the known shop names if the store is clearly identifiable, otherwise null,
+ "date": "YYYY-MM-DD" if a date is printed, otherwise null,
+ "lines": [{"name": string, "brand": string or null, "price": number in HK$ for the packs described, "packs": number of packs that price covers (usually 1; 2 for "2 for $30"), "qty": size of ONE pack as a number or null, "unit": one of "g","kg","ml","L","pc" or null, "matchId": id of an existing item that is clearly the same product, otherwise null, "note": other prices shown (member price, bundle deal) or null}]}
+
+Rules: never guess a price. Skip lines that are not products (totals, discounts, tax, bags). If the size is not visible, set qty and unit to null. Use the price shown most prominently and describe any other price in note.`;
+}
+const normLine=l=>{
+  let unit=String(l?.unit||'');if(unit.toLowerCase()==='l')unit='L';if(!FACTOR[unit])unit='';
+  const m=S.items.some(i=>i.id===l?.matchId)?l.matchId:'';
+  return {on:true,name:String(l?.name||'').slice(0,120),brand:String(l?.brand||'').slice(0,60),price:num(l?.price)>0?num(l.price):'',packs:Math.max(1,Math.round(num(l?.packs,1))),qty:num(l?.qty)>0?num(l.qty):'',unit,matchId:m,note:String(l?.note||'').slice(0,100)};
+};
+async function startScan(file){
+  if(!file||!S.sample)return;
+  const ctl=new AbortController();
+  openSheet(`<h2>Reading photo…</h2><p class="muted">Looking for product names, sizes and prices. This can take up to a minute.</p><div class="spin" aria-hidden="true"></div><div class="row-end"><button class="btn ghost" data-close>Stop</button></div>`);
+  S.scanCtl=ctl;
+  try{
+    const r=await S.sample.json(buildPrompt(),{images:file,signal:ctl.signal});
+    if(ctl.signal.aborted)return;
+    S.scanCtl=null;
+    const lines=(Array.isArray(r?.lines)?r.lines:[]).slice(0,40).map(normLine);
+    if(!lines.length){closeSheet();toast('No products found in that photo.');return}
+    const guess=S.shops.find(s=>r.shop&&s.name.toLowerCase()===String(r.shop).toLowerCase());
+    const d=/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')&&r.date<=today()?r.date:today();
+    S.scan={shop:(guess||S.shops[0]).id,date:d,rows:lines};
+    paintReview();
+  }catch(e){
+    if(e?.code==='cancelled')return;
+    S.scanCtl=null;closeSheet();toast(scanErr(e?.code));
+    if(['not_granted','sampling_disabled','images_unavailable','not_declared','capability_disabled','capability_removed'].includes(e?.code)){S.canScan=false;syncToolbar()}
+  }
+}
+function rowHtml(r,i){
+  const m=r.matchId&&S.items.find(x=>x.id===r.matchId);
+  const units=m?UNITS[m.type]:['g','kg','ml','L','pc'];
+  const items=S.items.map(x=>`<option value="${esc(x.id)}" ${x.id===r.matchId?'selected':''}>${esc(x.name)}${x.brand?' · '+esc(x.brand):''}</option>`).join('');
+  return `<div class="srow"><div class="srow-h"><input type="checkbox" data-r="${i}" data-k="on" ${r.on?'checked':''} aria-label="Include this line"><input data-r="${i}" data-k="name" value="${esc(r.name)}" aria-label="Product name"></div>
+    <select data-r="${i}" data-k="matchId" aria-label="Which item is this"><option value="">New item</option>${items}</select>
+    <div class="grid3"><input type="number" step="0.01" min="0" inputmode="decimal" data-r="${i}" data-k="price" value="${r.price}" placeholder="HK$" aria-label="Price">
+    <input type="number" step="1" min="1" inputmode="numeric" data-r="${i}" data-k="packs" value="${r.packs}" aria-label="Packs">
+    <div class="inline"><input type="number" step="any" min="0" inputmode="decimal" data-r="${i}" data-k="qty" value="${r.qty}" placeholder="Size" aria-label="Size of one pack"><select data-r="${i}" data-k="unit" aria-label="Unit">${r.unit?'':'<option value="">Unit</option>'}${units.map(u=>`<option ${u===r.unit?'selected':''}>${u}</option>`).join('')}</select></div></div>
+    ${r.note?`<span class="spread">${esc(r.note)}</span>`:''}</div>`;
+}
+function paintReview(){
+  const sc=S.scan;if(!sc)return;
+  const shops=S.shops.map(s=>`<option value="${esc(s.id)}" ${s.id===sc.shop?'selected':''}>${esc(s.name)}</option>`).join('');
+  const panel=$('#sheet .panel'),top=panel.scrollTop;
+  if(!panel.dataset.review){
+    openSheet('',(p,sig)=>{
+      p.addEventListener('input',e=>{const t=e.target,r=t.dataset.r;if(r===undefined)return;sc.rows[+r][t.dataset.k]=t.type==='checkbox'?t.checked:t.value});
+      p.addEventListener('change',e=>{
+        const t=e.target;
+        if(t.id==='sc-shop'){S.scan.shop=t.value;return}
+        if(t.id==='sc-date'){S.scan.date=t.value||today();return}
+        const r=t.dataset.r;if(r===undefined)return;
+        const row=S.scan.rows[+r];row[t.dataset.k]=t.type==='checkbox'?t.checked:t.value;
+        if(t.dataset.k==='matchId'||t.dataset.k==='unit')paintReview();
+      },sig);
+      p.addEventListener('click',e=>{if(e.target.closest('[data-apply]'))applyScan()},sig);
+    });
+    panel.dataset.review='1';
+  }
+  const p=$('#sheet .panel');
+  p.innerHTML=`<h2>Check what was read</h2><p class="sub">Fix anything that looks wrong, untick lines you don't want, then add them.</p>
+    <div class="grid2"><label class="f"><span>Shop</span><select id="sc-shop">${shops}</select></label><label class="f"><span>Date</span><input id="sc-date" type="date" value="${esc(sc.date)}"></label></div>
+    ${sc.rows.map(rowHtml).join('')}<p class="err" id="err" role="alert"></p>
+    <div class="row-end"><button class="btn ghost" data-close>Cancel</button><button class="btn" data-apply>Add selected</button></div>`;
+  p.scrollTop=top;
+}
+function applyScan(){
+  const sc=S.scan;if(!sc)return;
+  const bad=[],use=[];
+  sc.rows.forEach((r,i)=>{
+    if(!r.on)return;
+    const m=r.matchId&&S.items.find(x=>x.id===r.matchId);
+    const ok=num(r.price)>0&&num(r.qty)>0&&FACTOR[r.unit]&&(m||String(r.name).trim())&&(!m||TYPE_OF[r.unit]===m.type);
+    ok?use.push(r):bad.push(i+1);
+  });
+  if(bad.length){$('#err').textContent='Check line '+bad.join(', ')+': each needs a price, a size and a unit that matches the item.';return}
+  if(!use.length){$('#err').textContent='Tick at least one line.';return}
+  const changed=new Set();
+  for(const r of use){
+    const e=cleanPrice({id:uid(),t:Date.now(),shop:sc.shop,price:r.price,packs:r.packs,qty:r.qty,unit:r.unit,date:sc.date,note:r.note});
+    if(!e)continue;
+    let it=r.matchId&&S.items.find(x=>x.id===r.matchId);
+    if(!it){it={id:uid(),name:r.name.trim(),brand:String(r.brand||'').trim(),origin:'',type:TYPE_OF[r.unit],onList:false,need:0,prices:[],created:Date.now()};S.items.push(it)}
+    addEntry(it,e);changed.add(it);
+  }
+  changed.forEach(it=>saveItem(it));
+  S.tab='items';closeSheet();render();toast('Added '+use.length+' price'+(use.length>1?'s':''));
+}
+
+/* ---------- backup ---------- */
+const backupJson=()=>JSON.stringify({app:'household-price-book',version:1,exported:new Date().toISOString(),shops:S.shops,items:S.items},null,2);
+async function restoreFrom(file){
+  try{
+    const data=JSON.parse(await file.text());
+    const items=(Array.isArray(data.items)?data.items:[]).map(cleanItem).filter(Boolean);
+    const shops=(Array.isArray(data.shops)?data.shops:[]).map(cleanShop).filter(Boolean);
+    if(!items.length&&!shops.length){toast('That file has no price book data.');return}
+    let addedShops=false;
+    for(const s of shops)if(!S.shops.some(x=>x.id===s.id)){S.shops.push(s);addedShops=true}
+    if(addedShops)saveShops();
+    for(const it of items){const i=S.items.findIndex(x=>x.id===it.id);if(i>=0)S.items[i]=it;else S.items.push(it);saveItem(it)}
+    render();toast('Restored '+items.length+' item'+(items.length===1?'':'s'));
+  }catch{toast('That file could not be read.')}
+}
+
+/* ---------- events ---------- */
+function act(a,d){
+  const it=d.id&&S.items.find(i=>i.id===d.id);
+  if(['list','upd','addprice','edit','toggle','del','histdel'].includes(a)&&!it)return;
+  switch(a){
+    case 'list':it.onList=!it.onList;if(it.onList&&!(it.need>0))it.need=analyze(it).best?.base||1;commit(it);break;
+    case 'upd':priceSheet(it,d.pid);break;
+    case 'addprice':priceSheet(it);break;
+    case 'edit':editSheet(it);break;
+    case 'toggle':S.open.has(it.id)?S.open.delete(it.id):S.open.add(it.id);render();break;
+    case 'del':
+      if(S.confirm===it.id){S.confirm=null;S.open.delete(it.id);removeItem(it.id);render();toast('Item deleted')}
+      else{S.confirm=it.id;render();setTimeout(()=>{if(S.confirm===it.id){S.confirm=null;render()}},4000)}
+      break;
+    case 'histdel':it.prices=it.prices.filter(p=>p.id!==d.pid);commit(it);break;
+    case 'gotoitems':S.tab='items';render();break;
+    case 'shopadd':{
+      const name=($('#ns-name').value||'').trim();if(!name){toast('Enter a shop name.');return}
+      let id=name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'shop';
+      if(S.shops.some(s=>s.id===id))id+='-'+uid().slice(-4);
+      S.shops.push({id,name,kind:$('#ns-kind').value,fee:0,freeAbove:0});saveShops();render();break;
+    }
+    case 'shopdel':S.shops=S.shops.filter(s=>s.id!==d.id);saveShops();render();break;
+    case 'dl':S.dl.save({filename:'price-book-'+today()+'.json',data:backupJson()}).then(()=>toast('Backup saved')).catch(e=>{if(e?.code!=='declined')toast('Could not save the backup file.')});break;
+    case 'copy':
+      (navigator.clipboard?.writeText?navigator.clipboard.writeText(backupJson()):Promise.reject()).then(()=>toast('Backup copied')).catch(()=>{
+        openSheet(`<h2>Copy backup</h2><p class="sub">Select all and copy this text, then paste it into a note or file.</p><textarea id="bk" readonly>${esc(backupJson())}</textarea><div class="row-end"><button class="btn" data-close>Done</button></div>`,()=>{const t=$('#bk');t.focus();t.select()});
+      });break;
+    case 'restore':$('#restore').click();break;
+  }
+}
+function pickPhoto(){$('#photo').value='';$('#photo').click()}
+
+function wire(){
+  document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{S.tab=b.dataset.tab;render()}));
+  $('#q').addEventListener('input',e=>{S.q=e.target.value;render()});
+  $('#sort').addEventListener('change',e=>{S.sort=e.target.value;render()});
+  $('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;S.filter=b.dataset.f;document.querySelectorAll('#chips .chip').forEach(c=>c.setAttribute('aria-pressed',String(c===b)));render()});
+  $('#btn-add').addEventListener('click',addSheet);
+  $('#btn-scan').addEventListener('click',pickPhoto);
+  $('#photo').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(f)startScan(f)});
+  $('#restore').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(f)restoreFrom(f);e.target.value=''});
+  const v=$('#view');
+  v.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act(b.dataset.act,b.dataset)});
+  v.addEventListener('change',e=>{
+    const t=e.target;
+    if(t.dataset.need){const it=S.items.find(i=>i.id===t.dataset.need),n=parseFloat(t.value);if(it&&n>0){it.need=n;commit(it)}else render();return}
+    if(t.dataset.shop){
+      const s=S.shops.find(x=>x.id===t.dataset.shop);if(!s)return;const k=t.dataset.k;
+      if(k==='name'){const n=t.value.trim();if(n)s.name=n.slice(0,40)}
+      else if(k==='kind')s.kind=t.value==='online'?'online':'store';
+      else s[k]=Math.max(0,parseFloat(t.value)||0);
+      saveShops();render();
+    }
+  });
+  v.addEventListener('focusout',()=>{if(pendingRender){pendingRender=false;setTimeout(()=>render(),0)}});
+  $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden)closeSheet()});
+}
+
+/* ---------- boot ---------- */
+async function boot(){
+  wire();render();
+  const c=window.claude;
+  let db=null,sample=null,dl=null;
+  if(c&&typeof c.use==='function'){
+    [db,sample,dl]=await Promise.all(['db','sample','downloads'].map(n=>c.use(n).catch(()=>null)));
+  }
+  S.sample=sample;S.dl=dl;
+  if(sample&&typeof sample.limits==='function'){
+    const lim=await sample.limits().catch(()=>null);
+    if(lim&&lim.images){S.canScan=true;if(lim.images.mediaTypes)$('#photo').accept=lim.images.mediaTypes.join(',')}
+  }
+  if(db){
+    S.mode='shared';S.db=db;
+    db.collection('items').onSnapshot(snap=>{
+      S.items=snap.docs.map(d=>cleanItem({...JSON.parse(JSON.stringify(d.data())),id:d.id})).filter(Boolean);
+      S.ready=true;S.syncErr=false;render(true);
+    },()=>{S.syncErr=true;S.ready=true;render()});
+    db.doc('meta/shops').onSnapshot(s=>{
+      const list=s.exists&&Array.isArray(s.data().list)?s.data().list.map(cleanShop).filter(Boolean):[];
+      S.shops=list.length?JSON.parse(JSON.stringify(list)):DEFAULT_SHOPS.map(x=>({...x}));
+      render(true);
+    },()=>{});
+  }else{
+    const saved=lsLoad();
+    if(saved){
+      S.items=(Array.isArray(saved.items)?saved.items:[]).map(cleanItem).filter(Boolean);
+      const sh=(Array.isArray(saved.shops)?saved.shops:[]).map(cleanShop).filter(Boolean);
+      if(sh.length)S.shops=sh;
+    }
+    S.ready=true;render();
+  }
+}
+if(window.__PB_TEST)window.__PB_TEST.api={S,analyze,compute,offersFor,assign,cleanItem,cleanPrice,ageDays,fmt,optionFor};
+boot();
+})();
+</script>
+
+</body>
+</html>
