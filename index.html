@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<!-- Household Price Book. Single file, no build step, no network calls except Google Fonts.
-     Opened on its own it saves to this browser (localStorage). Add a LICENSE before publishing. -->
+<title>Household Price Book</title>
+<meta name="theme-color" content="#13201C">
+<!-- Household Price Book. Single file, no build step. Saves to this browser only (no shared database in this build). Add a LICENSE before open-sourcing. -->
 <style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}</style>
 </head>
 <body>
-<title>Household Price Book</title>
+
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: one column of item cards under a sticky tab bar; forms open as bottom sheets. A shelf-tag yellow chip marks the best unit price; everything else stays quiet. */
@@ -18,7 +19,7 @@
   --primary:#13201C; --primary-ink:#FFFFFF;
   --fresh:#1B6F45; --aging:#8F5A00; --stale:#66756F; --bad:#B3261E;
   --fresh-bg:#DCF0E4; --aging-bg:#FAEAC6; --stale-bg:#E2E7E4;
-  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --display:"Barlow Condensed","Arial Narrow","PingFang HK","Noto Sans HK","Microsoft JhengHei",sans-serif;
   --body:"Figtree","PingFang HK","Noto Sans HK","Microsoft JhengHei",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){
@@ -47,6 +48,8 @@ button,input,select{font:inherit;color:inherit}
 h1{font-family:var(--display);font-weight:700;font-size:32px;line-height:1;letter-spacing:.01em;text-wrap:balance}
 .pill{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
 .pill.live{background:var(--fresh-bg);color:var(--fresh)}
+.pillbtn{border:0;cursor:pointer;min-height:30px;color:var(--ink);background:var(--surface-2)}
+.top-r{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:6px;background:var(--bg);margin-inline:-16px;padding:8px 16px;border-bottom:1px solid var(--line)}
 .tabs button{flex:1;min-height:42px;border:0;border-radius:8px;background:transparent;font-weight:600;color:var(--muted);cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--primary);color:var(--primary-ink)}
@@ -157,29 +160,29 @@ textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);colo
 
 <div class="wrap">
   <div class="top">
-    <h1>Household Price Book</h1>
-    <span id="sync" class="pill">Loading</span>
+    <h1 data-i18n="Household Price Book">Household Price Book</h1>
+    <div class="top-r"><button id="lang" class="pill pillbtn" type="button">中文</button><span id="sync" class="pill">Loading</span></div>
   </div>
-  <nav class="tabs" role="tablist" aria-label="Sections">
-    <button role="tab" data-tab="items" aria-selected="true">Items</button>
-    <button role="tab" data-tab="basket" aria-selected="false">Basket</button>
-    <button role="tab" data-tab="shops" aria-selected="false">Shops &amp; backup</button>
+  <nav class="tabs" role="tablist" data-i18n-aria="Sections" aria-label="Sections">
+    <button role="tab" data-tab="items" aria-selected="true" data-i18n="Items">Items</button>
+    <button role="tab" data-tab="basket" aria-selected="false" data-i18n="Basket">Basket</button>
+    <button role="tab" data-tab="shops" aria-selected="false" data-i18n="Shops &amp; backup">Shops &amp; backup</button>
   </nav>
   <div id="toolbar" class="toolbar">
-    <input id="q" type="search" placeholder="Search items, brands, 搜尋…" autocomplete="off" aria-label="Search items">
+    <input id="q" type="search" placeholder="Search items or brands" data-i18n-ph="Search items or brands" autocomplete="off" aria-label="Search items" data-i18n-aria="Search items">
     <div class="tool-row">
-      <button id="btn-add" class="btn" type="button">+ Add item</button>
-      <button id="btn-scan" class="btn ghost" type="button" hidden>Scan photo</button>
-      <select id="sort" aria-label="Sort items">
-        <option value="savings">Biggest price gap</option>
-        <option value="name">A to Z</option>
-        <option value="stale">Oldest prices first</option>
+      <button id="btn-add" class="btn" type="button" data-i18n="+ Add item">+ Add item</button>
+      <button id="btn-scan" class="btn ghost" type="button" hidden data-i18n="Scan photo">Scan photo</button>
+      <select id="sort" aria-label="Sort items" data-i18n-aria="Sort items">
+        <option value="savings" data-i18n="Biggest price gap">Biggest price gap</option>
+        <option value="name" data-i18n="A to Z">A to Z</option>
+        <option value="stale" data-i18n="Oldest prices first">Oldest prices first</option>
       </select>
     </div>
     <div class="chips" id="chips">
-      <button class="chip" data-f="all" aria-pressed="true">All</button>
-      <button class="chip" data-f="list" aria-pressed="false">On my list</button>
-      <button class="chip" data-f="recheck" aria-pressed="false">Needs recheck</button>
+      <button class="chip" data-f="all" aria-pressed="true" data-i18n="All">All</button>
+      <button class="chip" data-f="list" aria-pressed="false" data-i18n="On my list">On my list</button>
+      <button class="chip" data-f="recheck" aria-pressed="false" data-i18n="Needs recheck">Needs recheck</button>
     </div>
   </div>
   <main id="view"></main>
@@ -195,21 +198,29 @@ textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);colo
 'use strict';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* ---------- language ---------- */
+const ZH={"Household Price Book": "家居比價簿", "Loading": "載入中", "Sync paused": "同步暫停", "Shared · live": "共享 · 即時同步", "This device only": "只儲存在此裝置", "Language": "語言", "Items": "商品", "Basket": "購物籃", "Shops & backup": "商店與備份", "Sections": "分頁", "Search items or brands": "搜尋商品或品牌", "Search items": "搜尋商品", "+ Add item": "+ 新增商品", "Scan photo": "掃描相片", "Sort items": "排序", "Biggest price gap": "價差最大", "A to Z": "名稱 A 至 Z", "Oldest prices first": "最舊價格優先", "All": "全部", "On my list": "在我的清單", "Needs recheck": "需要重新核對", "pc": "件", "/pc": "/件", "Unit": "單位", "compared by weight": "按重量比較", "compared by volume": "按容量比較", "compared by count": "按數量比較", "{0}. To change this, add a new item.": "{0}。如要更改，請新增另一個商品。", "today": "今日", "{0}d ago": "{0}日前", "{0}w ago": "{0}週前", "{0}mo ago": "{0}個月前", "Removed shop": "已移除的商店", "You can view this book but not change it. Ask the owner for Contributor access.": "你只能查看這本簿，不能修改。請向擁有者索取編輯權限。", "Could not save. Check your connection and try again.": "儲存失敗。請檢查網絡後再試。", "Throat candy bag": "潤喉糖", "Laundry liquid": "洗衣液", "Toilet tissue": "廁紙", "Example brand": "範例品牌", "Delivers": "送貨", "In store": "門市", "Update": "更新", "recheck": "需核對", "Made in {0}": "產地：{0}", "On list": "已在清單", "Add to list": "加入清單", "No prices yet.": "未有價格。", "Cheapest is {0}% below the priciest.": "最平的比最貴的平 {0}%。", "The best price is old, recheck it.": "最平的價格已經過時，請重新核對。", "Add price": "新增價格", "Hide details": "收起詳情", "Details": "詳情", "No history.": "沒有紀錄。", "Delete this price": "刪除此價格", "Delete": "刪除", "Edit item": "編輯商品", "Tap again to delete": "再按一次確認刪除", "Delete item": "刪除商品", "Loading your price book…": "正在載入價格簿…", "These are example items.": "以下是範例商品。", "They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.": "它們示範價格簿如何按每 100 克、每 100 毫升或每件比較各店價格。新增你的第一件商品後，範例就會消失。", "Nothing here": "沒有項目", "No items are on your list yet.": "清單內還沒有商品。", "Every price is under {0} days old.": "所有價格都在 {0} 日內更新。", "No items match your search.": "找不到符合的商品。", "Loading…": "載入中…", "Your basket is empty": "購物籃是空的", "Choose “Add to list” on items you buy regularly. The basket then works out the cheapest place for each one, and whether splitting the order across shops beats one delivery.": "在常買的商品上按「加入清單」，購物籃就會計算每件商品在哪間店最平，以及分開幾間店買是否比一次送貨更划算。", "Go to items": "前往商品", "Need": "需要", "Amount needed of {0}": "{0} 所需數量", "Remove": "移除", "Shopping list": "購物清單", "Amounts are rounded up to whole packs when pricing.": "計價時，數量會進位至整包。", "Cheapest way to buy this list": "買齊這份清單最平的方法", "items {0} + delivery {1}": "商品 {0} + 運費 {1}", "no delivery fees counted": "未計運費", "Splitting saves {0} versus buying everything at {1}.": "分開購買比全部在 {1} 買，可節省 {0}。", "Buying everything at {0} is already the cheapest option.": "全部在 {0} 購買已是最平的選擇。", "{0} delivery": "運費 {0}", "old price": "舊價格", "No price yet for: {0}.": "以下商品未有價格：{0}。", "{0} prices are older than {1} days. Recheck before you order.": "有 {0} 個價格超過 {1} 日未更新，落單前請重新核對。", "1 price is older than {0} days. Recheck before you order.": "有 1 個價格超過 {0} 日未更新，落單前請重新核對。", "Single shop totals": "單一商店總額", "All at {0}": "全部在 {0}", "Delivery fees apply to online shops only, using the amounts in Shops & backup. Store trips count as free.": "運費只適用於網店，金額按「商店與備份」內的設定計算。到門市購買不計運費。", "Shops": "商店", "Enter each online shop’s usual delivery fee and free-delivery minimum so the basket compares real totals.": "請輸入每間網店平時的運費及免運費門檻，購物籃才能比較真實總額。", "Shop name": "商店名稱", "Type": "類型", "Physical store": "實體門市", "Online, delivers": "網店，可送貨", "Delivery fee (HK$)": "運費 (HK$)", "Free delivery from (HK$, 0 = never)": "滿多少免運費 (HK$，0 = 沒有)", "Used by {0} prices": "已有 {0} 個價格使用", "Used by 1 price": "已有 1 個價格使用", "Remove shop": "移除商店", "Your items are saved to the shared book, so everyone with access sees updates live.": "你的商品已儲存在共享簿，有權限的人都會即時看到更新。", "Your items are saved in this browser only. Download a backup now and then.": "你的商品只儲存在此瀏覽器。請不時下載備份。", "New shop": "新增商店", "e.g. Donki, 759": "例如：唐吉訶德、759", "Add shop": "新增商店", "Backup": "備份", "Download backup": "下載備份", "Copy backup": "複製備份", "Restore from file": "從檔案還原", "Enter a shop name.": "請輸入商店名稱。", "Shop": "商店", "Price (HK$)": "價格 (HK$)", "Packs at this price": "此價格包含幾包", "Size of one pack": "每包大小", "Date seen": "日期", "Note": "備註", "member price, 2 for $30…": "會員價、2 件 $30…", "Enter the price.": "請輸入價格。", "Enter the size of one pack, for example 500 ml.": "請輸入每包大小，例如 500 ml。", "Check the price and size.": "請檢查價格和大小。", "Add item": "新增商品", "Item name": "商品名稱", "e.g. Throat candy": "例如：潤喉糖", "Brand": "品牌", "Made in (optional)": "產地（選填）", "Made in": "產地", "Compare by": "比較方式", "Weight (g, kg)": "重量 (g, kg)", "Volume (ml, L)": "容量 (ml, L)", "Count (pieces)": "數量（件）", "First price": "第一個價格", "Cancel": "取消", "Save item": "儲存商品", "Save price": "儲存價格", "Save": "儲存", "Enter the item name.": "請輸入商品名稱。", "Item added": "已新增商品", "Price saved": "已儲存價格", "Update price": "更新價格", "Item deleted": "已刪除商品", "Reading photo…": "正在讀取相片…", "Looking for product names, sizes and prices. This can take up to a minute.": "正在尋找商品名稱、大小和價格，最多可能需要一分鐘。", "Stop": "停止", "No products found in that photo.": "相片中找不到商品。", "Photo reading was not allowed for this page.": "這個頁面未獲准讀取相片。", "Too many requests right now. Try again in a minute.": "目前要求太多，請一分鐘後再試。", "That image could not be used. Try another photo.": "這張相片無法使用，請試另一張。", "Could not find prices in that photo. Try a closer, sharper shot of the tag or receipt.": "相片中找不到價格。請拍近一點、清楚一點的價錢牌或收據。", "Claude could not read that photo.": "Claude 無法讀取這張相片。", "Nothing readable came back. Try a closer photo.": "沒有讀取到內容。請拍近一點再試。", "Sign in again to read photos.": "請重新登入後再讀取相片。", "Photo reading failed. Try again.": "讀取相片失敗，請再試一次。", "Check what was read": "請核對讀取結果", "Fix anything that looks wrong, untick lines you don’t want, then add them.": "請修正錯誤，取消不需要的項目，然後加入。", "Date": "日期", "Include this line": "包含此項", "Product name": "商品名稱", "Which item is this": "對應哪件商品", "New item": "新商品", "Price": "價格", "Packs": "包數", "Size": "大小", "Add selected": "加入已選項目", "Check line {0}: each needs a price, a size and a unit that matches the item.": "請檢查第 {0} 項：每項都需要價格、大小，以及與商品相符的單位。", "Tick at least one line.": "請至少選擇一項。", "Added 1 price": "已加入 1 個價格", "Added {0} prices": "已加入 {0} 個價格", "Backup saved": "已儲存備份", "Could not save the backup file.": "無法儲存備份檔。", "Backup copied": "已複製備份", "Select all and copy this text, then paste it into a note or file.": "請全選並複製以下文字，然後貼到筆記或檔案內。", "Done": "完成", "That file has no price book data.": "這個檔案沒有價格簿資料。", "Restored 1 item": "已還原 1 件商品", "Restored {0} items": "已還原 {0} 件商品", "That file could not be read.": "無法讀取這個檔案。", "This browser blocks saving, so sharing cannot be turned on here.": "此瀏覽器不允許儲存資料，因此無法開啟共享。", "Connecting…": "正在連接…", "Moved 1 item from this phone into the shared book": "已將此手機上的 1 件商品移到共享簿", "Moved {0} items from this phone into the shared book": "已將此手機上的 {0} 件商品移到共享簿", "Shared book": "共享簿", "Right now your prices are saved on this phone only. Turn on sharing so everyone sees the same prices, updated live.": "目前你的價格只儲存在這部手機。開啟共享後，所有人都會看到相同的價格，並即時更新。", "Start a shared book": "開始共享簿", "Join with a link or code": "用連結或代碼加入", "This phone is connected to the shared book. Anyone with the share link can see and edit your prices, so send it only to people you trust.": "這部手機已連接共享簿。任何人只要有分享連結，都能查看和修改價格，所以請只傳給你信任的人。", "Copy share link": "複製分享連結", "Disconnect this phone": "中斷此手機的連接", "Share prices with others?": "要與其他人共享價格嗎？", "Right now this page saves prices on this phone only. Turn on sharing so everyone with the link sees the same prices, updated live.": "目前這個頁面只把價格儲存在這部手機。開啟共享後，所有有連結的人都會看到相同的價格，並即時更新。", "I have a share link or code": "我有分享連結或代碼", "Not now": "暫時不用", "Join the shared book": "加入共享簿", "Paste the share link or code": "貼上分享連結或代碼", "Join": "加入", "That does not look like a share link or code.": "這不像是分享連結或代碼。", "Share link copied": "已複製分享連結", "Share link": "分享連結", "Select all and copy this link, then send it to your friends.": "請全選並複製這個連結，然後傳給你的朋友。", "Disconnect this phone?": "要中斷此手機的連接嗎？", "The shared book stays online for everyone else. This phone goes back to its own private list. You can rejoin later with the share link.": "共享簿會繼續供其他人使用。這部手機會回到自己的私人清單。之後可用分享連結重新加入。", "Disconnect": "中斷連接"};
+let LANG='en';
+try{const sv=localStorage.getItem('pb-lang');LANG=sv==='zh'||sv==='en'?sv:((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en')}catch{}
+const tr=(k,...a)=>{const v=LANG==='zh'&&ZH[k]!==undefined?ZH[k]:k;return v.replace(/\{(\d+)\}/g,(m,i)=>a[+i]??'')};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const today=()=>ymd(new Date());
 const UNITS={w:['g','kg'],v:['ml','L'],c:['pc']};
 const FACTOR={g:1,kg:1000,ml:1,L:1000,pc:1};
 const TYPE_OF={g:'w',kg:'w',ml:'v',L:'v',pc:'c'};
-const PER={w:{n:100,label:'/100g',base:'g'},v:{n:100,label:'/100ml',base:'ml'},c:{n:1,label:'/pc',base:'pc'}};
+const PER={w:{n:100,label:'/100g',base:'g'},v:{n:100,label:'/100ml',base:'ml'},c:{n:1,get label(){return tr('/pc')},base:'pc'}};
 const TYPE_LABEL={w:'compared by weight',v:'compared by volume',c:'compared by count'};
+const typeLabel=ty=>tr(TYPE_LABEL[ty]);
+const uShow=u=>u==='pc'?tr('pc'):u;
+const cap=x=>LANG==='en'&&x?x[0].toUpperCase()+x.slice(1):x;
 const STALE_DAYS=30, FRESH_DAYS=14;
 const DEFAULT_SHOPS=[
   {id:'hktvmall',name:'HKTVmall',kind:'online',fee:0,freeAbove:0},
-  {id:'watsons',name:'Watsons',kind:'store',fee:0,freeAbove:0},
-  {id:'mannings',name:'Mannings',kind:'store',fee:0,freeAbove:0},
-  {id:'wellcome',name:'Wellcome',kind:'store',fee:0,freeAbove:0},
-  {id:'parknshop',name:'ParknShop',kind:'store',fee:0,freeAbove:0}
+  {id:'watsons',name:'Watsons 屈臣氏',kind:'store',fee:0,freeAbove:0},
+  {id:'mannings',name:'Mannings 萬寧',kind:'store',fee:0,freeAbove:0},
+  {id:'wellcome',name:'Wellcome 惠康',kind:'store',fee:0,freeAbove:0},
+  {id:'parknshop',name:'ParknShop 百佳',kind:'store',fee:0,freeAbove:0}
 ];
 const LS_KEY='household-price-book-v1';
 
@@ -220,29 +231,29 @@ const S={items:[],shops:DEFAULT_SHOPS.map(s=>({...s})),tab:'items',q:'',sort:'sa
 /* ---------- formatting ---------- */
 const fmt=n=>{const r=Math.round(n*100)/100;if(Number.isInteger(r))return String(r);return Math.abs(r*10-Math.round(r*10))<1e-9?r.toFixed(1):r.toFixed(2)};
 const hk=n=>'HK$'+fmt(n);
-const packText=o=>(o.packs>1?o.packs+'×':'')+fmt(o.qty)+o.unit;
-const shopOf=id=>S.shops.find(s=>s.id===id)||DEFAULT_SHOPS.find(s=>s.id===id)||{id,name:'Removed shop',kind:'store',fee:0,freeAbove:0};
+const packText=o=>(o.packs>1?o.packs+'×':'')+fmt(o.qty)+uShow(o.unit);
+const shopOf=id=>S.shops.find(s=>s.id===id)||DEFAULT_SHOPS.find(s=>s.id===id)||{id,name:tr('Removed shop'),kind:'store',fee:0,freeAbove:0};
 
 /* ---------- ages ---------- */
 function ageDays(date){const a=new Date(date+'T00:00:00'),b=new Date(today()+'T00:00:00');const n=Math.round((b-a)/864e5);return isNaN(n)?0:Math.max(0,n)}
 const freshness=a=>a<=FRESH_DAYS?'fresh':a<=STALE_DAYS?'aging':'stale';
-const ageText=a=>a===0?'today':a<14?a+'d ago':a<60?Math.round(a/7)+'w ago':Math.round(a/30)+'mo ago';
+const ageText=a=>a===0?tr('today'):a<14?tr('{0}d ago',a):a<60?tr('{0}w ago',Math.round(a/7)):tr('{0}mo ago',Math.round(a/30));
 
 /* ---------- price maths ---------- */
 function offersFor(it){
   const latest=new Map();
   const sorted=(it.prices||[]).slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.t||0)-(b.t||0));
   for(const p of sorted)latest.set(p.shop+'|'+p.base,p);
-  return [...latest.values()].map(p=>({...p,unit:p.price/p.base}));
+  return [...latest.values()].map(p=>({...p,up:p.price/p.base}));
 }
 function analyze(it){
-  const offers=offersFor(it).sort((a,b)=>a.unit-b.unit);
+  const offers=offersFor(it).sort((a,b)=>a.up-b.up);
   const best=offers[0],worst=offers[offers.length-1];
-  const spread=offers.length>1?1-best.unit/worst.unit:0;
+  const spread=offers.length>1?1-best.up/worst.up:0;
   const oldest=offers.reduce((m,o)=>Math.max(m,ageDays(o.date)),0);
   return {offers,best,worst,spread,oldest};
 }
-const perUnit=(o,type)=>o.unit*PER[type].n;
+const perUnit=(o,type)=>o.up*PER[type].n;
 const needOf=it=>it.need>0?it.need:(analyze(it).best?.base||1);
 
 function optionFor(it,shopId){
@@ -317,7 +328,7 @@ function lsLoad(){try{const r=JSON.parse(localStorage.getItem(LS_KEY)||'null');r
 function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({items:S.items,shops:S.shops}))}catch{}}
 const chains=new Map();
 function enqueue(key,fn){const prev=chains.get(key)||Promise.resolve();const next=prev.catch(()=>{}).then(fn);chains.set(key,next);return next}
-function fail(e){toast(e&&e.code==='invalid_argument'?'You can view this book but not change it. Ask the owner for Contributor access.':'Could not save. Check your connection and try again.')}
+function fail(e){toast(e&&e.code==='invalid_argument'?tr('You can view this book but not change it. Ask the owner for Contributor access.'):tr('Could not save. Check your connection and try again.'))}
 async function saveItem(it){
   if(S.mode==='shared'){try{await enqueue('i:'+it.id,()=>S.db.collection('items').doc(it.id).set(JSON.parse(JSON.stringify(it))))}catch(e){fail(e)}}
   else lsSave();
@@ -341,9 +352,9 @@ function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTi
 function examples(){
   const mk=(shop,price,packs,qty,unit,ago,note)=>{const d=new Date();d.setDate(d.getDate()-ago);return {id:uid(),t:Date.now()-ago*864e5,shop,price,packs,qty,unit,base:packs*qty*FACTOR[unit],date:ymd(d),note:note||''}};
   return [
-    {id:'ex1',name:'Throat candy bag',brand:'Example brand',origin:'',type:'w',onList:false,need:0,prices:[mk('hktvmall',34,1,150,'g',2),mk('watsons',24.9,1,150,'g',9),mk('mannings',19.9,1,150,'g',41)]},
-    {id:'ex2',name:'Laundry liquid',brand:'Example brand',origin:'',type:'v',onList:false,need:0,prices:[mk('hktvmall',79.9,1,3,'L',3),mk('watsons',52,1,1800,'ml',5),mk('mannings',84.9,1,3,'L',12)]},
-    {id:'ex3',name:'Toilet tissue',brand:'Example brand',origin:'',type:'c',onList:false,need:0,prices:[mk('hktvmall',48,1,24,'pc',1),mk('wellcome',55,1,24,'pc',6)]}
+    {id:'ex1',name:tr('Throat candy bag'),brand:tr('Example brand'),origin:'',type:'w',onList:false,need:0,prices:[mk('hktvmall',34,1,150,'g',2),mk('watsons',24.9,1,150,'g',9),mk('mannings',19.9,1,150,'g',41)]},
+    {id:'ex2',name:tr('Laundry liquid'),brand:tr('Example brand'),origin:'',type:'v',onList:false,need:0,prices:[mk('hktvmall',79.9,1,3,'L',3),mk('watsons',52,1,1800,'ml',5),mk('mannings',84.9,1,3,'L',12)]},
+    {id:'ex3',name:tr('Toilet tissue'),brand:tr('Example brand'),origin:'',type:'c',onList:false,need:0,prices:[mk('hktvmall',48,1,24,'pc',1),mk('wellcome',55,1,24,'pc',6)]}
   ];
 }
 
@@ -351,36 +362,36 @@ function examples(){
 function offerRow(o,type,i,stale,editable,itemId){
   const per=PER[type],a=ageDays(o.date),f=freshness(a),sh=shopOf(o.shop);
   return `<li class="offer ${stale?'stale':''}">
-    <div class="o-main"><span class="o-shop">${esc(sh.name)}<span class="mini">${sh.kind==='online'?'Delivers':'In store'}</span></span>
+    <div class="o-main"><span class="o-shop">${esc(sh.name)}<span class="mini">${sh.kind==='online'?tr('Delivers'):tr('In store')}</span></span>
     <span class="o-price">${hk(o.price)}<span>${esc(packText(o))}</span></span></div>
     <div class="o-sub"><span class="o-unit">${hk(perUnit(o,type))}${per.label}${o.note?' · '+esc(o.note):''}</span>
-    <span class="o-act"><span class="age ${f}">${ageText(a)}${f==='stale'?' · recheck':''}</span>${editable?`<button class="link" data-act="upd" data-id="${esc(itemId)}" data-pid="${esc(o.id)}">Update</button>`:''}</span></div>
+    <span class="o-act"><span class="age ${f}">${ageText(a)}${f==='stale'?' · '+tr('recheck'):''}</span>${editable?`<button class="link" data-act="upd" data-id="${esc(itemId)}" data-pid="${esc(o.id)}">${tr('Update')}</button>`:''}</span></div>
   </li>`;
 }
 function card(it,a,ex){
   const per=PER[it.type],open=S.open.has(it.id);
   const bestAge=a.best?ageDays(a.best.date):0;
-  const meta=[it.brand,it.origin&&('Made in '+it.origin),TYPE_LABEL[it.type]].filter(Boolean).map(esc).join(' · ');
+  const meta=[it.brand,it.origin&&tr('Made in {0}',it.origin),typeLabel(it.type)].filter(Boolean).map(esc).join(' · ');
   let h=`<article class="card ${ex?'is-example':''}"><div class="card-h"><div class="ttl"><h2>${esc(it.name)}</h2><p class="sub">${meta}</p></div>`;
-  if(!ex)h+=`<button class="listbtn" data-act="list" data-id="${esc(it.id)}" aria-pressed="${!!it.onList}">${it.onList?'On list':'Add to list'}</button>`;
+  if(!ex)h+=`<button class="listbtn" data-act="list" data-id="${esc(it.id)}" aria-pressed="${!!it.onList}">${it.onList?tr('On list'):tr('Add to list')}</button>`;
   h+='</div>';
   if(a.best){
     h+=`<div class="best"><span class="tag"><small>HK$</small>${fmt(perUnit(a.best,it.type))}<small>${per.label}</small></span><span class="best-meta">${esc(shopOf(a.best.shop).name)} · ${ageText(bestAge)}</span></div>`;
-    if(a.offers.length>1)h+=`<p class="spread">Cheapest is ${Math.round(a.spread*100)}% below the priciest${bestAge>STALE_DAYS?'. The best price is old, recheck it.':'.'}</p>`;
+    if(a.offers.length>1)h+=`<p class="spread">${tr('Cheapest is {0}% below the priciest.',Math.round(a.spread*100))}${bestAge>STALE_DAYS?' '+tr('The best price is old, recheck it.'):''}</p>`;
     h+=`<ul class="offers">${a.offers.map((o,i)=>offerRow(o,it.type,i,ageDays(o.date)>STALE_DAYS,!ex,it.id)).join('')}</ul>`;
-  }else h+='<p class="muted">No prices yet.</p>';
+  }else h+='<p class="muted">'+tr('No prices yet.')+'</p>';
   if(!ex){
-    h+=`<div class="foot"><button class="btn small" data-act="addprice" data-id="${esc(it.id)}">Add price</button><button class="link" data-act="toggle" data-id="${esc(it.id)}">${open?'Hide details':'Details'}</button></div>`;
+    h+=`<div class="foot"><button class="btn small" data-act="addprice" data-id="${esc(it.id)}">${tr('Add price')}</button><button class="link" data-act="toggle" data-id="${esc(it.id)}">${open?tr('Hide details'):tr('Details')}</button></div>`;
     if(open){
       const hist=(it.prices||[]).slice().sort((x,y)=>x.date<y.date?1:x.date>y.date?-1:(y.t||0)-(x.t||0));
-      h+=`<div class="hist">${hist.map(p=>`<div class="hist-row"><span>${esc(p.date)} · ${esc(shopOf(p.shop).name)} · ${hk(p.price)} · ${esc(packText(p))}${p.note?' · '+esc(p.note):''}</span><button class="link danger" data-act="histdel" data-id="${esc(it.id)}" data-pid="${esc(p.id)}" aria-label="Delete this price">Delete</button></div>`).join('')||'<p class="muted">No history.</p>'}</div>
-      <div class="foot"><button class="link" data-act="edit" data-id="${esc(it.id)}">Edit item</button><button class="link danger" data-act="del" data-id="${esc(it.id)}">${S.confirm===it.id?'Tap again to delete':'Delete item'}</button></div>`;
+      h+=`<div class="hist">${hist.map(p=>`<div class="hist-row"><span>${esc(p.date)} · ${esc(shopOf(p.shop).name)} · ${hk(p.price)} · ${esc(packText(p))}${p.note?' · '+esc(p.note):''}</span><button class="link danger" data-act="histdel" data-id="${esc(it.id)}" data-pid="${esc(p.id)}" aria-label="${esc(tr('Delete this price'))}">${tr('Delete')}</button></div>`).join('')||'<p class="muted">'+tr('No history.')+'</p>'}</div>
+      <div class="foot"><button class="link" data-act="edit" data-id="${esc(it.id)}">${tr('Edit item')}</button><button class="link danger" data-act="del" data-id="${esc(it.id)}">${S.confirm===it.id?tr('Tap again to delete'):tr('Delete item')}</button></div>`;
     }
   }
   return h+'</article>';
 }
 function viewItems(){
-  if(!S.ready)return '<p class="muted">Loading your price book…</p>';
+  if(!S.ready)return '<p class="muted">'+tr('Loading your price book…')+'</p>';
   const ex=!S.items.length;
   let rows=(ex?examples():S.items).map(it=>({it,a:analyze(it)}));
   const q=S.q.trim().toLowerCase();
@@ -391,56 +402,65 @@ function viewItems(){
   else if(S.sort==='stale')rows.sort((x,y)=>y.a.oldest-x.a.oldest);
   else rows.sort((x,y)=>y.a.spread-x.a.spread);
   let h='';
-  if(ex)h+=`<div class="banner"><strong>These are example items.</strong><span>They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.</span></div>`;
-  if(!rows.length)h+=`<div class="empty"><h2>Nothing here</h2><p>${S.filter==='list'?'No items are on your list yet.':S.filter==='recheck'?'Every price is under '+STALE_DAYS+' days old.':'No items match your search.'}</p></div>`;
+  if(ex)h+=`<div class="banner"><strong>${tr('These are example items.')}</strong><span>${tr('They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.')}</span></div>`;
+  if(!rows.length)h+=`<div class="empty"><h2>${tr('Nothing here')}</h2><p>${S.filter==='list'?tr('No items are on your list yet.'):S.filter==='recheck'?tr('Every price is under {0} days old.',STALE_DAYS):tr('No items match your search.')}</p></div>`;
   else h+=rows.map(({it,a})=>card(it,a,ex)).join('');
   return h;
 }
 function viewBasket(){
-  if(!S.ready)return '<p class="muted">Loading…</p>';
+  if(!S.ready)return '<p class="muted">'+tr('Loading…')+'</p>';
   const list=S.items.filter(i=>i.onList);
-  if(!list.length)return `<div class="empty"><h2>Your basket is empty</h2><p>Choose “Add to list” on items you buy regularly. The basket then works out the cheapest place for each one, and whether splitting the order across shops beats one delivery.</p><button class="btn" data-act="gotoitems">Go to items</button></div>`;
+  if(!list.length)return `<div class="empty"><h2>${tr('Your basket is empty')}</h2><p>${tr('Choose “Add to list” on items you buy regularly. The basket then works out the cheapest place for each one, and whether splitting the order across shops beats one delivery.')}</p><button class="btn" data-act="gotoitems">${tr('Go to items')}</button></div>`;
   const ul={w:'g',v:'ml',c:'pc'};
-  const needs=list.map(it=>`<li><span class="n-name">${esc(it.name)}</span><label class="n-in">Need <input type="number" min="1" step="any" inputmode="decimal" data-need="${esc(it.id)}" value="${fmt(needOf(it))}" aria-label="Amount needed of ${esc(it.name)}"> ${ul[it.type]}</label><button class="link" data-act="list" data-id="${esc(it.id)}">Remove</button></li>`).join('');
+  const needs=list.map(it=>`<li><span class="n-name">${esc(it.name)}</span><label class="n-in">${tr('Need')} <input type="number" min="1" step="any" inputmode="decimal" data-need="${esc(it.id)}" value="${fmt(needOf(it))}" aria-label="${esc(tr('Amount needed of {0}',it.name))}"> ${uShow(ul[it.type])}</label><button class="link" data-act="list" data-id="${esc(it.id)}">${tr('Remove')}</button></li>`).join('');
   const {mix,singles}=compute(list);
-  let h=`<section class="card"><h2 class="sec">Shopping list</h2><ul class="needs">${needs}</ul><p class="spread">Amounts are rounded up to whole packs when pricing.</p></section>`;
+  let h=`<section class="card"><h2 class="sec">${tr('Shopping list')}</h2><ul class="needs">${needs}</ul><p class="spread">${tr('Amounts are rounded up to whole packs when pricing.')}</p></section>`;
   const stale=mix.groups.reduce((n,g)=>n+g.rows.filter(r=>ageDays(r.o.date)>STALE_DAYS).length,0);
-  h+=`<section class="card"><h2 class="sec">Cheapest way to buy this list</h2><div class="total"><span class="big">${hk(mix.total)}</span><span class="muted">${mix.del>0?'items '+hk(mix.total-mix.del)+' + delivery '+hk(mix.del):'no delivery fees counted'}</span></div>`;
+  h+=`<section class="card"><h2 class="sec">${tr('Cheapest way to buy this list')}</h2><div class="total"><span class="big">${hk(mix.total)}</span><span class="muted">${mix.del>0?tr('items {0} + delivery {1}',hk(mix.total-mix.del),hk(mix.del)):tr('no delivery fees counted')}</span></div>`;
   if(singles.length){
     const s0=singles[0],gap=s0.total-mix.total;
-    h+=gap>0.5?`<p class="save">Splitting saves ${hk(gap)} versus buying everything at ${esc(shopOf(s0.sid).name)}.</p>`:`<p class="save">Buying everything at ${esc(shopOf(s0.sid).name)} is already the cheapest option.</p>`;
+    h+=gap>0.5?`<p class="save">${esc(tr('Splitting saves {0} versus buying everything at {1}.',hk(gap),shopOf(s0.sid).name))}</p>`:`<p class="save">${esc(tr('Buying everything at {0} is already the cheapest option.',shopOf(s0.sid).name))}</p>`;
   }
-  h+=mix.groups.sort((a,b)=>b.sub-a.sub).map(g=>{const sh=shopOf(g.sid);return `<div class="grp"><div class="grp-h"><h3>${esc(sh.name)}</h3><span>${hk(g.sub)}${g.d>0?' + '+hk(g.d)+' delivery':''}</span></div>${g.rows.map(r=>`<div class="line"><span>${r.n>1?r.n+' × ':''}${esc(r.it.name)} <span class="muted">${esc(packText(r.o))}${ageDays(r.o.date)>STALE_DAYS?' · old price':''}</span></span><b>${hk(r.cost)}</b></div>`).join('')}</div>`}).join('');
-  if(mix.un.length)h+=`<p class="warn">No price yet for: ${mix.un.map(i=>esc(i.name)).join(', ')}.</p>`;
-  if(stale)h+=`<p class="warn">${stale} price${stale>1?'s are':' is'} older than ${STALE_DAYS} days. Recheck before you order.</p>`;
-  if(singles.length>1)h+=`<table class="plans" aria-label="Single shop totals"><tbody>${singles.map(s=>`<tr><td>All at ${esc(shopOf(s.sid).name)}</td><td>${hk(s.total)}</td></tr>`).join('')}</tbody></table>`;
-  h+=`<p class="spread">Delivery fees apply to online shops only, using the amounts in Shops &amp; backup. Store trips count as free.</p></section>`;
+  h+=mix.groups.sort((a,b)=>b.sub-a.sub).map(g=>{const sh=shopOf(g.sid);return `<div class="grp"><div class="grp-h"><h3>${esc(sh.name)}</h3><span>${hk(g.sub)}${g.d>0?' + '+tr('{0} delivery',hk(g.d)):''}</span></div>${g.rows.map(r=>`<div class="line"><span>${r.n>1?r.n+' × ':''}${esc(r.it.name)} <span class="muted">${esc(packText(r.o))}${ageDays(r.o.date)>STALE_DAYS?' · '+tr('old price'):''}</span></span><b>${hk(r.cost)}</b></div>`).join('')}</div>`}).join('');
+  if(mix.un.length)h+=`<p class="warn">${tr('No price yet for: {0}.',mix.un.map(i=>esc(i.name)).join(', '))}</p>`;
+  if(stale)h+=`<p class="warn">${stale>1?tr('{0} prices are older than {1} days. Recheck before you order.',stale,STALE_DAYS):tr('1 price is older than {0} days. Recheck before you order.',STALE_DAYS)}</p>`;
+  if(singles.length>1)h+=`<table class="plans" aria-label="${esc(tr('Single shop totals'))}"><tbody>${singles.map(s=>`<tr><td>${esc(tr('All at {0}',shopOf(s.sid).name))}</td><td>${hk(s.total)}</td></tr>`).join('')}</tbody></table>`;
+  h+=`<p class="spread">${esc(tr('Delivery fees apply to online shops only, using the amounts in Shops & backup. Store trips count as free.'))}</p></section>`;
   return h;
 }
 function viewShops(){
-  if(!S.ready)return '<p class="muted">Loading…</p>';
+  if(!S.ready)return '<p class="muted">'+tr('Loading…')+'</p>';
   const used=id=>S.items.reduce((n,it)=>n+it.prices.filter(p=>p.shop===id).length,0);
   const rows=S.shops.map(s=>{const u=used(s.id);return `<div class="shop">
-    <div class="grid2"><label class="f"><span>Shop name</span><input data-shop="${esc(s.id)}" data-k="name" value="${esc(s.name)}"></label>
-    <label class="f"><span>Type</span><select data-shop="${esc(s.id)}" data-k="kind"><option value="store" ${s.kind==='store'?'selected':''}>Physical store</option><option value="online" ${s.kind==='online'?'selected':''}>Online, delivers</option></select></label></div>
-    ${s.kind==='online'?`<div class="grid2"><label class="f"><span>Delivery fee (HK$)</span><input type="number" min="0" step="any" inputmode="decimal" data-shop="${esc(s.id)}" data-k="fee" value="${s.fee||0}"></label>
-    <label class="f"><span>Free delivery from (HK$, 0 = never)</span><input type="number" min="0" step="any" inputmode="decimal" data-shop="${esc(s.id)}" data-k="freeAbove" value="${s.freeAbove||0}"></label></div>`:''}
-    <div>${u?`<span class="spread">Used by ${u} price${u>1?'s':''}</span>`:`<button class="link danger" data-act="shopdel" data-id="${esc(s.id)}">Remove shop</button>`}</div></div>`}).join('');
-  const where=S.mode==='shared'?'Your items are saved to the shared book, so everyone with access sees updates live.':'Your items are saved in this browser only. Download a backup now and then.';
-  return `<section class="card"><h2 class="sec">Shops</h2><p class="spread">Enter each online shop's usual delivery fee and free-delivery minimum so the basket compares real totals.</p>${rows}
-    <div class="shop"><div class="grid2"><label class="f"><span>New shop</span><input id="ns-name" placeholder="e.g. Donki, 惠康"></label><label class="f"><span>Type</span><select id="ns-kind"><option value="store">Physical store</option><option value="online">Online, delivers</option></select></label></div><div><button class="btn small" data-act="shopadd">Add shop</button></div></div></section>
-    <section class="card"><h2 class="sec">Backup</h2><p class="spread">${where}</p><div class="foot">${S.dl?'<button class="btn small" data-act="dl">Download backup</button>':''}<button class="btn small ghost" data-act="copy">Copy backup</button><button class="btn small ghost" data-act="restore">Restore from file</button></div></section>`;
+    <div class="grid2"><label class="f"><span>${tr('Shop name')}</span><input data-shop="${esc(s.id)}" data-k="name" value="${esc(s.name)}"></label>
+    <label class="f"><span>${tr('Type')}</span><select data-shop="${esc(s.id)}" data-k="kind"><option value="store" ${s.kind==='store'?'selected':''}>${tr('Physical store')}</option><option value="online" ${s.kind==='online'?'selected':''}>${tr('Online, delivers')}</option></select></label></div>
+    ${s.kind==='online'?`<div class="grid2"><label class="f"><span>${tr('Delivery fee (HK$)')}</span><input type="number" min="0" step="any" inputmode="decimal" data-shop="${esc(s.id)}" data-k="fee" value="${s.fee||0}"></label>
+    <label class="f"><span>${tr('Free delivery from (HK$, 0 = never)')}</span><input type="number" min="0" step="any" inputmode="decimal" data-shop="${esc(s.id)}" data-k="freeAbove" value="${s.freeAbove||0}"></label></div>`:''}
+    <div>${u?`<span class="spread">${u>1?tr('Used by {0} prices',u):tr('Used by 1 price')}</span>`:`<button class="link danger" data-act="shopdel" data-id="${esc(s.id)}">${tr('Remove shop')}</button>`}</div></div>`}).join('');
+  const where=S.mode==='shared'?tr('Your items are saved to the shared book, so everyone with access sees updates live.'):tr('Your items are saved in this browser only. Download a backup now and then.');
+  return `<section class="card"><h2 class="sec">${tr('Shops')}</h2><p class="spread">${tr('Enter each online shop’s usual delivery fee and free-delivery minimum so the basket compares real totals.')}</p>${rows}
+    <div class="shop"><div class="grid2"><label class="f"><span>${tr('New shop')}</span><input id="ns-name" placeholder="${esc(tr('e.g. Donki, 759'))}"></label><label class="f"><span>${tr('Type')}</span><select id="ns-kind"><option value="store">${tr('Physical store')}</option><option value="online">${tr('Online, delivers')}</option></select></label></div><div><button class="btn small" data-act="shopadd">${tr('Add shop')}</button></div></div></section>
+    ${hostedCard()}<section class="card"><h2 class="sec">${tr('Backup')}</h2><p class="spread">${where}</p><div class="foot">${S.dl?'<button class="btn small" data-act="dl">'+tr('Download backup')+'</button>':''}<button class="btn small ghost" data-act="copy">${tr('Copy backup')}</button><button class="btn small ghost" data-act="restore">${tr('Restore from file')}</button></div></section>`;
 }
 
 let pendingRender=false;
+function applyStatic(){
+  document.documentElement.lang=LANG==='zh'?'zh-HK':'en';
+  document.title=tr('Household Price Book');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tr(el.getAttribute('data-i18n'))});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=tr(el.getAttribute('data-i18n-ph'))});
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{el.setAttribute('aria-label',tr(el.getAttribute('data-i18n-aria')))});
+  const lb=$('#lang');lb.textContent=LANG==='zh'?'English':'中文';lb.setAttribute('aria-label',tr('Language'));
+}
 function syncToolbar(){$('#btn-scan').hidden=!S.canScan}
 function render(remote){
   const ae=document.activeElement;
   if(remote&&ae&&$('#view').contains(ae)&&/INPUT|SELECT/.test(ae.tagName)){pendingRender=true;return}
   const sync=$('#sync');
-  sync.textContent=S.syncErr?'Sync paused':S.mode==='shared'?'Shared · live':'This device only';
+  sync.textContent=S.syncErr?tr('Sync paused'):S.mode==='shared'?tr('Shared · live'):tr('This device only');
   sync.className='pill'+(S.mode==='shared'&&!S.syncErr?' live':'');
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===S.tab)));
+  applyStatic();
   $('#toolbar').hidden=S.tab!=='items';
   syncToolbar();
   $('#view').innerHTML=S.tab==='items'?viewItems():S.tab==='basket'?viewBasket():viewShops();
@@ -463,22 +483,22 @@ function closeSheet(){
   if(S.sheetCtl){S.sheetCtl.abort();S.sheetCtl=null}
   $('#sheet').hidden=true;document.body.style.overflow='';S.scan=null;
 }
-const unitOpts=(type,sel)=>UNITS[type].map(u=>`<option ${u===sel?'selected':''}>${u}</option>`).join('');
+const unitOpts=(type,sel)=>UNITS[type].map(u=>`<option value="${u}" ${u===sel?'selected':''}>${uShow(u)}</option>`).join('');
 function priceForm(type,v={}){
   const shops=S.shops.map(s=>`<option value="${esc(s.id)}" ${s.id===v.shop?'selected':''}>${esc(s.name)}</option>`).join('');
   return `<div class="grid2">
-    <label class="f"><span>Shop</span><select id="f-shop">${shops}</select></label>
-    <label class="f"><span>Price (HK$)</span><input id="f-price" type="number" inputmode="decimal" step="0.01" min="0" value="${v.price??''}" ${v.focusPrice?'autofocus':''}></label>
-    <label class="f"><span>Packs at this price</span><input id="f-packs" type="number" inputmode="numeric" step="1" min="1" value="${v.packs??1}"></label>
-    <label class="f"><span>Size of one pack</span><div class="inline"><input id="f-qty" type="number" inputmode="decimal" step="any" min="0" value="${v.qty??''}"><select id="f-unit">${unitOpts(type,v.unit)}</select></div></label>
-    <label class="f"><span>Date seen</span><input id="f-date" type="date" value="${esc(v.date||today())}"></label>
-    <label class="f"><span>Note</span><input id="f-note" placeholder="member price, 2 for $30…" value="${esc(v.note||'')}"></label></div>`;
+    <label class="f"><span>${tr('Shop')}</span><select id="f-shop">${shops}</select></label>
+    <label class="f"><span>${tr('Price (HK$)')}</span><input id="f-price" type="number" inputmode="decimal" step="0.01" min="0" value="${v.price??''}" ${v.focusPrice?'autofocus':''}></label>
+    <label class="f"><span>${tr('Packs at this price')}</span><input id="f-packs" type="number" inputmode="numeric" step="1" min="1" value="${v.packs??1}"></label>
+    <label class="f"><span>${tr('Size of one pack')}</span><div class="inline"><input id="f-qty" type="number" inputmode="decimal" step="any" min="0" value="${v.qty??''}"><select id="f-unit">${unitOpts(type,v.unit)}</select></div></label>
+    <label class="f"><span>${tr('Date seen')}</span><input id="f-date" type="date" value="${esc(v.date||today())}"></label>
+    <label class="f"><span>${tr('Note')}</span><input id="f-note" placeholder="${esc(tr('member price, 2 for $30…'))}" value="${esc(v.note||'')}"></label></div>`;
 }
 function readPriceForm(){
   const price=parseFloat($('#f-price').value),packs=Math.max(1,parseInt($('#f-packs').value)||1),qty=parseFloat($('#f-qty').value);
-  if(!(price>0))return {error:'Enter the price.'};
-  if(!(qty>0))return {error:'Enter the size of one pack, for example 500 ml.'};
-  return cleanPrice({id:uid(),t:Date.now(),shop:$('#f-shop').value,price,packs,qty,unit:$('#f-unit').value,date:$('#f-date').value||today(),note:$('#f-note').value.trim()})||{error:'Check the price and size.'};
+  if(!(price>0))return {error:tr('Enter the price.')};
+  if(!(qty>0))return {error:tr('Enter the size of one pack, for example 500 ml.')};
+  return cleanPrice({id:uid(),t:Date.now(),shop:$('#f-shop').value,price,packs,qty,unit:$('#f-unit').value,date:$('#f-date').value||today(),note:$('#f-note').value.trim()})||{error:tr('Check the price and size.')};
 }
 function addEntry(it,e){
   it.prices=(it.prices||[]).filter(p=>!(p.shop===e.shop&&p.base===e.base&&p.date===e.date));
@@ -487,51 +507,51 @@ function addEntry(it,e){
   if(it.prices.length>80)it.prices=it.prices.slice(-80);
 }
 function addSheet(){
-  openSheet(`<h2>Add item</h2><form id="frm" class="panel-form" style="display:grid;gap:14px">
-    <label class="f"><span>Item name</span><input id="f-name" required autocomplete="off" placeholder="e.g. Throat candy, 潤喉糖" autofocus></label>
-    <div class="grid2"><label class="f"><span>Brand</span><input id="f-brand" autocomplete="off"></label><label class="f"><span>Made in (optional)</span><input id="f-origin" autocomplete="off"></label></div>
-    <fieldset><legend>Compare by</legend><div class="seg">
-      <label><input type="radio" name="type" value="w" checked><span>Weight (g, kg)</span></label>
-      <label><input type="radio" name="type" value="v"><span>Volume (ml, L)</span></label>
-      <label><input type="radio" name="type" value="c"><span>Count (pieces)</span></label></div></fieldset>
-    <h3>First price</h3>${priceForm('w')}
+  openSheet(`<h2>${tr('Add item')}</h2><form id="frm" class="panel-form" style="display:grid;gap:14px">
+    <label class="f"><span>${tr('Item name')}</span><input id="f-name" required autocomplete="off" placeholder="${esc(tr('e.g. Throat candy'))}" autofocus></label>
+    <div class="grid2"><label class="f"><span>${tr('Brand')}</span><input id="f-brand" autocomplete="off"></label><label class="f"><span>${tr('Made in (optional)')}</span><input id="f-origin" autocomplete="off"></label></div>
+    <fieldset><legend>${tr('Compare by')}</legend><div class="seg">
+      <label><input type="radio" name="type" value="w" checked><span>${tr('Weight (g, kg)')}</span></label>
+      <label><input type="radio" name="type" value="v"><span>${tr('Volume (ml, L)')}</span></label>
+      <label><input type="radio" name="type" value="c"><span>${tr('Count (pieces)')}</span></label></div></fieldset>
+    <h3>${tr('First price')}</h3>${priceForm('w')}
     <p class="err" id="err" role="alert"></p>
-    <div class="row-end"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn" type="submit">Save item</button></div></form>`,(p,sig)=>{
+    <div class="row-end"><button type="button" class="btn ghost" data-close>${tr('Cancel')}</button><button class="btn" type="submit">${tr('Save item')}</button></div></form>`,(p,sig)=>{
     p.addEventListener('change',e=>{if(e.target.name==='type')$('#f-unit').innerHTML=unitOpts(e.target.value)},sig);
     p.addEventListener('submit',e=>{
       e.preventDefault();
-      const name=$('#f-name').value.trim();if(!name){$('#err').textContent='Enter the item name.';return}
+      const name=$('#f-name').value.trim();if(!name){$('#err').textContent=tr('Enter the item name.');return}
       const r=readPriceForm();if(r.error){$('#err').textContent=r.error;return}
       const type=p.querySelector('input[name=type]:checked').value;
       const it={id:uid(),name,brand:$('#f-brand').value.trim(),origin:$('#f-origin').value.trim(),type,onList:false,need:0,prices:[r],created:Date.now()};
-      S.items.push(it);saveItem(it);S.tab='items';closeSheet();render();toast('Item added');
+      S.items.push(it);saveItem(it);S.tab='items';closeSheet();render();toast(tr('Item added'));
     },sig);
   });
 }
 function priceSheet(it,pid){
-  const offers=offersFor(it),ref=offers.find(o=>o.id===pid)||offers.sort((a,b)=>a.unit-b.unit)[0]||{};
-  openSheet(`<h2>${pid?'Update price':'Add price'}</h2><p class="sub">${esc(it.name)}${it.brand?' · '+esc(it.brand):''}</p><form id="frm" style="display:grid;gap:14px">
+  const offers=offersFor(it),ref=offers.find(o=>o.id===pid)||offers.sort((a,b)=>a.up-b.up)[0]||{};
+  openSheet(`<h2>${pid?tr('Update price'):tr('Add price')}</h2><p class="sub">${esc(it.name)}${it.brand?' · '+esc(it.brand):''}</p><form id="frm" style="display:grid;gap:14px">
     ${priceForm(it.type,{shop:ref.shop,packs:ref.packs,qty:ref.qty,unit:ref.unit,focusPrice:true})}
     <p class="err" id="err" role="alert"></p>
-    <div class="row-end"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn" type="submit">Save price</button></div></form>`,(p,sig)=>{
+    <div class="row-end"><button type="button" class="btn ghost" data-close>${tr('Cancel')}</button><button class="btn" type="submit">${tr('Save price')}</button></div></form>`,(p,sig)=>{
     p.addEventListener('submit',e=>{
       e.preventDefault();const r=readPriceForm();if(r.error){$('#err').textContent=r.error;return}
-      addEntry(it,r);commit(it);closeSheet();toast('Price saved');
+      addEntry(it,r);commit(it);closeSheet();toast(tr('Price saved'));
     },sig);
   });
 }
 function editSheet(it){
-  openSheet(`<h2>Edit item</h2><form id="frm" style="display:grid;gap:14px">
-    <label class="f"><span>Item name</span><input id="f-name" required value="${esc(it.name)}" autofocus></label>
-    <div class="grid2"><label class="f"><span>Brand</span><input id="f-brand" value="${esc(it.brand)}"></label><label class="f"><span>Made in</span><input id="f-origin" value="${esc(it.origin)}"></label></div>
-    <p class="sub">${TYPE_LABEL[it.type][0].toUpperCase()+TYPE_LABEL[it.type].slice(1)}. To change this, add a new item.</p>
-    <div class="row-end"><button type="button" class="btn ghost" data-close>Cancel</button><button class="btn" type="submit">Save</button></div></form>`,(p,sig)=>{
+  openSheet(`<h2>${tr('Edit item')}</h2><form id="frm" style="display:grid;gap:14px">
+    <label class="f"><span>${tr('Item name')}</span><input id="f-name" required value="${esc(it.name)}" autofocus></label>
+    <div class="grid2"><label class="f"><span>${tr('Brand')}</span><input id="f-brand" value="${esc(it.brand)}"></label><label class="f"><span>${tr('Made in')}</span><input id="f-origin" value="${esc(it.origin)}"></label></div>
+    <p class="sub">${esc(tr('{0}. To change this, add a new item.',cap(typeLabel(it.type))))}</p>
+    <div class="row-end"><button type="button" class="btn ghost" data-close>${tr('Cancel')}</button><button class="btn" type="submit">${tr('Save')}</button></div></form>`,(p,sig)=>{
     p.addEventListener('submit',e=>{e.preventDefault();const n=$('#f-name').value.trim();if(!n)return;it.name=n;it.brand=$('#f-brand').value.trim();it.origin=$('#f-origin').value.trim();commit(it);closeSheet()},sig);
   });
 }
 
 /* ---------- photo scan ---------- */
-const scanErr=c=>({not_granted:'Photo reading was not allowed for this page.',rate_limited:'Too many requests right now. Try again in a minute.',image_rejected:'That image could not be used. Try another photo.',invalid_json:'Could not find prices in that photo. Try a closer, sharper shot of the tag or receipt.',refused:'Claude could not read that photo.',empty_completion:'Nothing readable came back. Try a closer photo.',session_expired:'Sign in again to read photos.'}[c]||'Photo reading failed. Try again.');
+const scanErr=c=>tr({not_granted:'Photo reading was not allowed for this page.',rate_limited:'Too many requests right now. Try again in a minute.',image_rejected:'That image could not be used. Try another photo.',invalid_json:'Could not find prices in that photo. Try a closer, sharper shot of the tag or receipt.',refused:'Claude could not read that photo.',empty_completion:'Nothing readable came back. Try a closer photo.',session_expired:'Sign in again to read photos.'}[c]||'Photo reading failed. Try again.');
 function buildPrompt(){
   const items=S.items.slice(0,200).map(i=>i.id+': '+i.name+(i.brand?' ('+i.brand+')':'')+' ['+TYPE_LABEL[i.type]+']').join('\n')||'(none yet)';
   const shops=S.shops.map(s=>s.name).join(', ');
@@ -557,14 +577,14 @@ const normLine=l=>{
 async function startScan(file){
   if(!file||!S.sample)return;
   const ctl=new AbortController();
-  openSheet(`<h2>Reading photo…</h2><p class="muted">Looking for product names, sizes and prices. This can take up to a minute.</p><div class="spin" aria-hidden="true"></div><div class="row-end"><button class="btn ghost" data-close>Stop</button></div>`);
+  openSheet(`<h2>${tr('Reading photo…')}</h2><p class="muted">${tr('Looking for product names, sizes and prices. This can take up to a minute.')}</p><div class="spin" aria-hidden="true"></div><div class="row-end"><button class="btn ghost" data-close>${tr('Stop')}</button></div>`);
   S.scanCtl=ctl;
   try{
     const r=await S.sample.json(buildPrompt(),{images:file,signal:ctl.signal});
     if(ctl.signal.aborted)return;
     S.scanCtl=null;
     const lines=(Array.isArray(r?.lines)?r.lines:[]).slice(0,40).map(normLine);
-    if(!lines.length){closeSheet();toast('No products found in that photo.');return}
+    if(!lines.length){closeSheet();toast(tr('No products found in that photo.'));return}
     const guess=S.shops.find(s=>r.shop&&s.name.toLowerCase()===String(r.shop).toLowerCase());
     const d=/^\d{4}-\d{2}-\d{2}$/.test(r.date||'')&&r.date<=today()?r.date:today();
     S.scan={shop:(guess||S.shops[0]).id,date:d,rows:lines};
@@ -579,11 +599,11 @@ function rowHtml(r,i){
   const m=r.matchId&&S.items.find(x=>x.id===r.matchId);
   const units=m?UNITS[m.type]:['g','kg','ml','L','pc'];
   const items=S.items.map(x=>`<option value="${esc(x.id)}" ${x.id===r.matchId?'selected':''}>${esc(x.name)}${x.brand?' · '+esc(x.brand):''}</option>`).join('');
-  return `<div class="srow"><div class="srow-h"><input type="checkbox" data-r="${i}" data-k="on" ${r.on?'checked':''} aria-label="Include this line"><input data-r="${i}" data-k="name" value="${esc(r.name)}" aria-label="Product name"></div>
-    <select data-r="${i}" data-k="matchId" aria-label="Which item is this"><option value="">New item</option>${items}</select>
-    <div class="grid3"><input type="number" step="0.01" min="0" inputmode="decimal" data-r="${i}" data-k="price" value="${r.price}" placeholder="HK$" aria-label="Price">
-    <input type="number" step="1" min="1" inputmode="numeric" data-r="${i}" data-k="packs" value="${r.packs}" aria-label="Packs">
-    <div class="inline"><input type="number" step="any" min="0" inputmode="decimal" data-r="${i}" data-k="qty" value="${r.qty}" placeholder="Size" aria-label="Size of one pack"><select data-r="${i}" data-k="unit" aria-label="Unit">${r.unit?'':'<option value="">Unit</option>'}${units.map(u=>`<option ${u===r.unit?'selected':''}>${u}</option>`).join('')}</select></div></div>
+  return `<div class="srow"><div class="srow-h"><input type="checkbox" data-r="${i}" data-k="on" ${r.on?'checked':''} aria-label="${esc(tr('Include this line'))}"><input data-r="${i}" data-k="name" value="${esc(r.name)}" aria-label="${esc(tr('Product name'))}"></div>
+    <select data-r="${i}" data-k="matchId" aria-label="${esc(tr('Which item is this'))}"><option value="">${tr('New item')}</option>${items}</select>
+    <div class="grid3"><input type="number" step="0.01" min="0" inputmode="decimal" data-r="${i}" data-k="price" value="${r.price}" placeholder="HK$" aria-label="${esc(tr('Price'))}">
+    <input type="number" step="1" min="1" inputmode="numeric" data-r="${i}" data-k="packs" value="${r.packs}" aria-label="${esc(tr('Packs'))}">
+    <div class="inline"><input type="number" step="any" min="0" inputmode="decimal" data-r="${i}" data-k="qty" value="${r.qty}" placeholder="${esc(tr('Size'))}" aria-label="${esc(tr('Size of one pack'))}"><select data-r="${i}" data-k="unit" aria-label="${esc(tr('Unit'))}">${r.unit?'':`<option value="">${tr('Unit')}</option>`}${units.map(u=>`<option value="${u}" ${u===r.unit?'selected':''}>${uShow(u)}</option>`).join('')}</select></div></div>
     ${r.note?`<span class="spread">${esc(r.note)}</span>`:''}</div>`;
 }
 function paintReview(){
@@ -606,10 +626,10 @@ function paintReview(){
     panel.dataset.review='1';
   }
   const p=$('#sheet .panel');
-  p.innerHTML=`<h2>Check what was read</h2><p class="sub">Fix anything that looks wrong, untick lines you don't want, then add them.</p>
-    <div class="grid2"><label class="f"><span>Shop</span><select id="sc-shop">${shops}</select></label><label class="f"><span>Date</span><input id="sc-date" type="date" value="${esc(sc.date)}"></label></div>
+  p.innerHTML=`<h2>${tr('Check what was read')}</h2><p class="sub">${tr('Fix anything that looks wrong, untick lines you don’t want, then add them.')}</p>
+    <div class="grid2"><label class="f"><span>${tr('Shop')}</span><select id="sc-shop">${shops}</select></label><label class="f"><span>${tr('Date')}</span><input id="sc-date" type="date" value="${esc(sc.date)}"></label></div>
     ${sc.rows.map(rowHtml).join('')}<p class="err" id="err" role="alert"></p>
-    <div class="row-end"><button class="btn ghost" data-close>Cancel</button><button class="btn" data-apply>Add selected</button></div>`;
+    <div class="row-end"><button class="btn ghost" data-close>${tr('Cancel')}</button><button class="btn" data-apply>${tr('Add selected')}</button></div>`;
   p.scrollTop=top;
 }
 function applyScan(){
@@ -621,8 +641,8 @@ function applyScan(){
     const ok=num(r.price)>0&&num(r.qty)>0&&FACTOR[r.unit]&&(m||String(r.name).trim())&&(!m||TYPE_OF[r.unit]===m.type);
     ok?use.push(r):bad.push(i+1);
   });
-  if(bad.length){$('#err').textContent='Check line '+bad.join(', ')+': each needs a price, a size and a unit that matches the item.';return}
-  if(!use.length){$('#err').textContent='Tick at least one line.';return}
+  if(bad.length){$('#err').textContent=tr('Check line {0}: each needs a price, a size and a unit that matches the item.',bad.join(', '));return}
+  if(!use.length){$('#err').textContent=tr('Tick at least one line.');return}
   const changed=new Set();
   for(const r of use){
     const e=cleanPrice({id:uid(),t:Date.now(),shop:sc.shop,price:r.price,packs:r.packs,qty:r.qty,unit:r.unit,date:sc.date,note:r.note});
@@ -632,7 +652,7 @@ function applyScan(){
     addEntry(it,e);changed.add(it);
   }
   changed.forEach(it=>saveItem(it));
-  S.tab='items';closeSheet();render();toast('Added '+use.length+' price'+(use.length>1?'s':''));
+  S.tab='items';closeSheet();render();toast(use.length>1?tr('Added {0} prices',use.length):tr('Added 1 price'));
 }
 
 /* ---------- backup ---------- */
@@ -642,13 +662,13 @@ async function restoreFrom(file){
     const data=JSON.parse(await file.text());
     const items=(Array.isArray(data.items)?data.items:[]).map(cleanItem).filter(Boolean);
     const shops=(Array.isArray(data.shops)?data.shops:[]).map(cleanShop).filter(Boolean);
-    if(!items.length&&!shops.length){toast('That file has no price book data.');return}
+    if(!items.length&&!shops.length){toast(tr('That file has no price book data.'));return}
     let addedShops=false;
     for(const s of shops)if(!S.shops.some(x=>x.id===s.id)){S.shops.push(s);addedShops=true}
     if(addedShops)saveShops();
     for(const it of items){const i=S.items.findIndex(x=>x.id===it.id);if(i>=0)S.items[i]=it;else S.items.push(it);saveItem(it)}
-    render();toast('Restored '+items.length+' item'+(items.length===1?'':'s'));
-  }catch{toast('That file could not be read.')}
+    render();toast(items.length===1?tr('Restored 1 item'):tr('Restored {0} items',items.length));
+  }catch{toast(tr('That file could not be read.'))}
 }
 
 /* ---------- events ---------- */
@@ -662,24 +682,25 @@ function act(a,d){
     case 'edit':editSheet(it);break;
     case 'toggle':S.open.has(it.id)?S.open.delete(it.id):S.open.add(it.id);render();break;
     case 'del':
-      if(S.confirm===it.id){S.confirm=null;S.open.delete(it.id);removeItem(it.id);render();toast('Item deleted')}
+      if(S.confirm===it.id){S.confirm=null;S.open.delete(it.id);removeItem(it.id);render();toast(tr('Item deleted'))}
       else{S.confirm=it.id;render();setTimeout(()=>{if(S.confirm===it.id){S.confirm=null;render()}},4000)}
       break;
     case 'histdel':it.prices=it.prices.filter(p=>p.id!==d.pid);commit(it);break;
     case 'gotoitems':S.tab='items';render();break;
     case 'shopadd':{
-      const name=($('#ns-name').value||'').trim();if(!name){toast('Enter a shop name.');return}
+      const name=($('#ns-name').value||'').trim();if(!name){toast(tr('Enter a shop name.'));return}
       let id=name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'shop';
       if(S.shops.some(s=>s.id===id))id+='-'+uid().slice(-4);
       S.shops.push({id,name,kind:$('#ns-kind').value,fee:0,freeAbove:0});saveShops();render();break;
     }
     case 'shopdel':S.shops=S.shops.filter(s=>s.id!==d.id);saveShops();render();break;
-    case 'dl':S.dl.save({filename:'price-book-'+today()+'.json',data:backupJson()}).then(()=>toast('Backup saved')).catch(e=>{if(e?.code!=='declined')toast('Could not save the backup file.')});break;
+    case 'dl':S.dl.save({filename:'price-book-'+today()+'.json',data:backupJson()}).then(()=>toast(tr('Backup saved'))).catch(e=>{if(e?.code!=='declined')toast(tr('Could not save the backup file.'))});break;
     case 'copy':
-      (navigator.clipboard?.writeText?navigator.clipboard.writeText(backupJson()):Promise.reject()).then(()=>toast('Backup copied')).catch(()=>{
-        openSheet(`<h2>Copy backup</h2><p class="sub">Select all and copy this text, then paste it into a note or file.</p><textarea id="bk" readonly>${esc(backupJson())}</textarea><div class="row-end"><button class="btn" data-close>Done</button></div>`,()=>{const t=$('#bk');t.focus();t.select()});
+      (navigator.clipboard?.writeText?navigator.clipboard.writeText(backupJson()):Promise.reject()).then(()=>toast(tr('Backup copied'))).catch(()=>{
+        openSheet(`<h2>${tr('Copy backup')}</h2><p class="sub">${tr('Select all and copy this text, then paste it into a note or file.')}</p><textarea id="bk" readonly>${esc(backupJson())}</textarea><div class="row-end"><button class="btn" data-close>${tr('Done')}</button></div>`,()=>{const t=$('#bk');t.focus();t.select()});
       });break;
     case 'restore':$('#restore').click();break;
+    default:hostedAct(a,d);
   }
 }
 function pickPhoto(){$('#photo').value='';$('#photo').click()}
@@ -690,6 +711,7 @@ function wire(){
   $('#sort').addEventListener('change',e=>{S.sort=e.target.value;render()});
   $('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;S.filter=b.dataset.f;document.querySelectorAll('#chips .chip').forEach(c=>c.setAttribute('aria-pressed',String(c===b)));render()});
   $('#btn-add').addEventListener('click',addSheet);
+  $('#lang').addEventListener('click',()=>{LANG=LANG==='en'?'zh':'en';try{localStorage.setItem('pb-lang',LANG)}catch{}render()});
   $('#btn-scan').addEventListener('click',pickPhoto);
   $('#photo').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(f)startScan(f)});
   $('#restore').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(f)restoreFrom(f);e.target.value=''});
@@ -711,6 +733,14 @@ function wire(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden)closeSheet()});
 }
 
+/*HOSTED_BEGIN*/
+function hostedInit(){return null}
+function hostedCard(){return ''}
+function hostedAfterBoot(){}
+function hostedMigrate(){}
+function hostedAct(){}
+/*HOSTED_END*/
+
 /* ---------- boot ---------- */
 async function boot(){
   wire();render();
@@ -724,11 +754,12 @@ async function boot(){
     const lim=await sample.limits().catch(()=>null);
     if(lim&&lim.images){S.canScan=true;if(lim.images.mediaTypes)$('#photo').accept=lim.images.mediaTypes.join(',')}
   }
+  if(!db)db=hostedInit();
   if(db){
     S.mode='shared';S.db=db;
     db.collection('items').onSnapshot(snap=>{
       S.items=snap.docs.map(d=>cleanItem({...JSON.parse(JSON.stringify(d.data())),id:d.id})).filter(Boolean);
-      S.ready=true;S.syncErr=false;render(true);
+      S.ready=true;S.syncErr=false;hostedMigrate(snap);render(true);
     },()=>{S.syncErr=true;S.ready=true;render()});
     db.doc('meta/shops').onSnapshot(s=>{
       const list=s.exists&&Array.isArray(s.data().list)?s.data().list.map(cleanShop).filter(Boolean):[];
@@ -744,8 +775,9 @@ async function boot(){
     }
     S.ready=true;render();
   }
+  hostedAfterBoot();
 }
-if(window.__PB_TEST)window.__PB_TEST.api={S,analyze,compute,offersFor,assign,cleanItem,cleanPrice,ageDays,fmt,optionFor};
+if(window.__PB_TEST)window.__PB_TEST.api={S,analyze,compute,offersFor,assign,cleanItem,cleanPrice,ageDays,fmt,optionFor,tr,ZH,viewItems,viewBasket,viewShops,setLang:l=>{LANG=l}};
 boot();
 })();
 </script>
