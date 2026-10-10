@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Household Price Book</title>
 <meta name="theme-color" content="#13201C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Price Book">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%2313201C%27/%3E%3Crect x=%277%27 y=%2711%27 width=%2718%27 height=%2710%27 rx=%272%27 fill=%27%23FFD43B%27/%3E%3C/svg%3E">
 <!-- Household Price Book (hosted build). Add a LICENSE before open-sourcing. -->
 <style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}</style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -42,6 +46,8 @@
   --fresh-bg:#17352A; --aging-bg:#3A2D12; --stale-bg:#222E2B;
   color-scheme:dark;
 }
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,select,summary,label,[role=tab]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4;padding-inline:16px;padding-block:0 48px}
@@ -60,6 +66,7 @@ h1{font-family:var(--display);font-weight:700;font-size:32px;line-height:1;lette
 :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .toolbar{display:grid;gap:10px;padding-block:14px 4px}
 .tool-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select,textarea{font-size:16px}
 input,select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-height:42px;width:100%;min-width:0}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:0 16px;border-radius:8px;border:1px solid var(--primary);background:var(--primary);color:var(--primary-ink);font-weight:600;cursor:pointer;white-space:nowrap}
 .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
@@ -169,6 +176,17 @@ textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);colo
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation:none}}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--primary);color:var(--primary-ink);padding:10px 16px;border-radius:99px;font-weight:600;font-size:14px;z-index:30;max-width:calc(100% - 32px);text-align:center}
+@media (pointer:coarse){
+  .btn.small,.chip,.listbtn{min-height:44px}
+  .pillbtn{min-height:40px;min-width:40px}
+  .iconbtn{width:40px}
+  .link{min-height:44px;padding-inline:6px;display:inline-flex;align-items:center}
+  .o-act{gap:4px}
+  .foot{gap:6px}
+  .seg span{min-height:44px}
+  .hist-row{padding-block:2px}
+}
+.panel{overscroll-behavior:contain;max-height:92vh;max-height:92dvh}
 </style>
 
 <div class="wrap">
