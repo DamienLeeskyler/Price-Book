@@ -34,6 +34,7 @@
     color-scheme:dark;
   }
 }
+:root[data-theme="light"]{color-scheme:light}
 :root[data-theme="dark"]{
   --bg:#0F1513; --surface:#172220; --surface-2:#1F2D2A; --ink:#E8F0ED; --muted:#9CAEA7; --line:#2B3B37;
   --primary:#E8F0ED; --primary-ink:#0F1513;
@@ -74,7 +75,16 @@ main{padding-block:12px;display:grid;gap:12px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;min-width:0}
 .card.is-example{border-style:dashed}
 .card-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.ttl{min-width:0}
+.ttl{min-width:0;flex:1}
+.thumb{flex:none;width:56px;height:56px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);display:grid;place-items:center;padding:0;overflow:hidden;cursor:pointer}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb svg{width:24px;height:24px}
+.pbox{display:grid;gap:10px;justify-items:start}
+.pimg{width:100%;max-height:220px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);object-fit:contain;aspect-ratio:4/3;display:grid;place-items:center;color:var(--muted)}
+.pimg.none svg{width:40px;height:40px}
+.pbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.iconbtn{width:34px;padding:0;display:inline-grid;place-items:center}
+.iconbtn svg{width:18px;height:18px}
 .card h2{font-size:18px;font-weight:700;line-height:1.25;overflow-wrap:anywhere}
 .sub{font-size:13px;color:var(--muted)}
 .listbtn{flex:none;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:transparent;font-size:13px;font-weight:600;cursor:pointer}
@@ -164,7 +174,7 @@ textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);colo
 <div class="wrap">
   <div class="top">
     <h1 data-i18n="Household Price Book">Household Price Book</h1>
-    <div class="top-r"><button id="lang" class="pill pillbtn" type="button">中文</button><span id="sync" class="pill">Loading</span></div>
+    <div class="top-r"><button id="theme" class="pill pillbtn iconbtn" type="button"></button><button id="lang" class="pill pillbtn" type="button">中文</button><span id="sync" class="pill">Loading</span></div>
   </div>
   <nav class="tabs" role="tablist" data-i18n-aria="Sections" aria-label="Sections">
     <button role="tab" data-tab="items" aria-selected="true" data-i18n="Items">Items</button>
@@ -202,7 +212,22 @@ textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);colo
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* ---------- language ---------- */
-const ZH={"Household Price Book": "家居比價簿", "Loading": "載入中", "Sync paused": "同步暫停", "Shared · live": "共享 · 即時同步", "This device only": "只儲存在此裝置", "Language": "語言", "Items": "商品", "Basket": "購物籃", "Shops & backup": "商店與備份", "Sections": "分頁", "Search items or brands": "搜尋商品或品牌", "Search items": "搜尋商品", "+ Add item": "+ 新增商品", "Scan photo": "掃描相片", "Sort items": "排序", "Biggest price gap": "價差最大", "A to Z": "名稱 A 至 Z", "Oldest prices first": "最舊價格優先", "All": "全部", "On my list": "在我的清單", "Needs recheck": "需要重新核對", "pc": "件", "/pc": "/件", "Unit": "單位", "compared by weight": "按重量比較", "compared by volume": "按容量比較", "compared by count": "按數量比較", "{0}. To change this, add a new item.": "{0}。如要更改，請新增另一個商品。", "today": "今日", "{0}d ago": "{0}日前", "{0}w ago": "{0}週前", "{0}mo ago": "{0}個月前", "Removed shop": "已移除的商店", "You can view this book but not change it. Ask the owner for Contributor access.": "你只能查看這本簿，不能修改。請向擁有者索取編輯權限。", "Could not save. Check your connection and try again.": "儲存失敗。請檢查網絡後再試。", "Throat candy bag": "潤喉糖", "Laundry liquid": "洗衣液", "Toilet tissue": "廁紙", "Example brand": "範例品牌", "Delivers": "送貨", "In store": "門市", "Update": "更新", "recheck": "需核對", "Made in {0}": "產地：{0}", "On list": "已在清單", "Add to list": "加入清單", "No prices yet.": "未有價格。", "Cheapest is {0}% below the priciest.": "最平的比最貴的平 {0}%。", "The best price is old, recheck it.": "最平的價格已經過時，請重新核對。", "Add price": "新增價格", "Hide details": "收起詳情", "Details": "詳情", "No history.": "沒有紀錄。", "Delete this price": "刪除此價格", "Delete": "刪除", "Edit item": "編輯商品", "Tap again to delete": "再按一次確認刪除", "Delete item": "刪除商品", "Loading your price book…": "正在載入價格簿…", "These are example items.": "以下是範例商品。", "They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.": "它們示範價格簿如何按每 100 克、每 100 毫升或每件比較各店價格。新增你的第一件商品後，範例就會消失。", "Nothing here": "沒有項目", "No items are on your list yet.": "清單內還沒有商品。", "Every price is under {0} days old.": "所有價格都在 {0} 日內更新。", "No items match your search.": "找不到符合的商品。", "Loading…": "載入中…", "Your basket is empty": "購物籃是空的", "Choose “Add to list” on items you buy regularly. The basket then works out the cheapest place for each one, and whether splitting the order across shops beats one delivery.": "在常買的商品上按「加入清單」，購物籃就會計算每件商品在哪間店最平，以及分開幾間店買是否比一次送貨更划算。", "Go to items": "前往商品", "Need": "需要", "Amount needed of {0}": "{0} 所需數量", "Remove": "移除", "Shopping list": "購物清單", "Amounts are rounded up to whole packs when pricing.": "計價時，數量會進位至整包。", "Cheapest way to buy this list": "買齊這份清單最平的方法", "items {0} + delivery {1}": "商品 {0} + 運費 {1}", "no delivery fees counted": "未計運費", "Splitting saves {0} versus buying everything at {1}.": "分開購買比全部在 {1} 買，可節省 {0}。", "Buying everything at {0} is already the cheapest option.": "全部在 {0} 購買已是最平的選擇。", "{0} delivery": "運費 {0}", "old price": "舊價格", "No price yet for: {0}.": "以下商品未有價格：{0}。", "{0} prices are older than {1} days. Recheck before you order.": "有 {0} 個價格超過 {1} 日未更新，落單前請重新核對。", "1 price is older than {0} days. Recheck before you order.": "有 1 個價格超過 {0} 日未更新，落單前請重新核對。", "Single shop totals": "單一商店總額", "All at {0}": "全部在 {0}", "Delivery fees apply to online shops only, using the amounts in Shops & backup. Store trips count as free.": "運費只適用於網店，金額按「商店與備份」內的設定計算。到門市購買不計運費。", "Shops": "商店", "Enter each online shop’s usual delivery fee and free-delivery minimum so the basket compares real totals.": "請輸入每間網店平時的運費及免運費門檻，購物籃才能比較真實總額。", "Shop name": "商店名稱", "Type": "類型", "Physical store": "實體門市", "Online, delivers": "網店，可送貨", "Delivery fee (HK$)": "運費 (HK$)", "Free delivery from (HK$, 0 = never)": "滿多少免運費 (HK$，0 = 沒有)", "Used by {0} prices": "已有 {0} 個價格使用", "Used by 1 price": "已有 1 個價格使用", "Remove shop": "移除商店", "Your items are saved to the shared book, so everyone with access sees updates live.": "你的商品已儲存在共享簿，有權限的人都會即時看到更新。", "Your items are saved in this browser only. Download a backup now and then.": "你的商品只儲存在此瀏覽器。請不時下載備份。", "New shop": "新增商店", "e.g. Donki, 759": "例如：唐吉訶德、759", "Add shop": "新增商店", "Backup": "備份", "Download backup": "下載備份", "Copy backup": "複製備份", "Restore from file": "從檔案還原", "Enter a shop name.": "請輸入商店名稱。", "Shop": "商店", "Price (HK$)": "價格 (HK$)", "Packs at this price": "此價格包含幾包", "Size of one pack": "每包大小", "Date seen": "日期", "Note": "備註", "member price, 2 for $30…": "會員價、2 件 $30…", "Enter the price.": "請輸入價格。", "Enter the size of one pack, for example 500 ml.": "請輸入每包大小，例如 500 ml。", "Check the price and size.": "請檢查價格和大小。", "Add item": "新增商品", "Item name": "商品名稱", "e.g. Throat candy": "例如：潤喉糖", "Brand": "品牌", "Made in (optional)": "產地（選填）", "Made in": "產地", "Compare by": "比較方式", "Weight (g, kg)": "重量 (g, kg)", "Volume (ml, L)": "容量 (ml, L)", "Count (pieces)": "數量（件）", "First price": "第一個價格", "Cancel": "取消", "Save item": "儲存商品", "Save price": "儲存價格", "Save": "儲存", "Enter the item name.": "請輸入商品名稱。", "Item added": "已新增商品", "Price saved": "已儲存價格", "Update price": "更新價格", "Item deleted": "已刪除商品", "Reading photo…": "正在讀取相片…", "Looking for product names, sizes and prices. This can take up to a minute.": "正在尋找商品名稱、大小和價格，最多可能需要一分鐘。", "Stop": "停止", "No products found in that photo.": "相片中找不到商品。", "Photo reading was not allowed for this page.": "這個頁面未獲准讀取相片。", "Too many requests right now. Try again in a minute.": "目前要求太多，請一分鐘後再試。", "That image could not be used. Try another photo.": "這張相片無法使用，請試另一張。", "Could not find prices in that photo. Try a closer, sharper shot of the tag or receipt.": "相片中找不到價格。請拍近一點、清楚一點的價錢牌或收據。", "Claude could not read that photo.": "Claude 無法讀取這張相片。", "Nothing readable came back. Try a closer photo.": "沒有讀取到內容。請拍近一點再試。", "Sign in again to read photos.": "請重新登入後再讀取相片。", "Photo reading failed. Try again.": "讀取相片失敗，請再試一次。", "Check what was read": "請核對讀取結果", "Fix anything that looks wrong, untick lines you don’t want, then add them.": "請修正錯誤，取消不需要的項目，然後加入。", "Date": "日期", "Include this line": "包含此項", "Product name": "商品名稱", "Which item is this": "對應哪件商品", "New item": "新商品", "Price": "價格", "Packs": "包數", "Size": "大小", "Add selected": "加入已選項目", "Check line {0}: each needs a price, a size and a unit that matches the item.": "請檢查第 {0} 項：每項都需要價格、大小，以及與商品相符的單位。", "Tick at least one line.": "請至少選擇一項。", "Added 1 price": "已加入 1 個價格", "Added {0} prices": "已加入 {0} 個價格", "Backup saved": "已儲存備份", "Could not save the backup file.": "無法儲存備份檔。", "Backup copied": "已複製備份", "Select all and copy this text, then paste it into a note or file.": "請全選並複製以下文字，然後貼到筆記或檔案內。", "Done": "完成", "That file has no price book data.": "這個檔案沒有價格簿資料。", "Restored 1 item": "已還原 1 件商品", "Restored {0} items": "已還原 {0} 件商品", "That file could not be read.": "無法讀取這個檔案。", "This browser blocks saving, so sharing cannot be turned on here.": "此瀏覽器不允許儲存資料，因此無法開啟共享。", "Connecting…": "正在連接…", "Moved 1 item from this phone into the shared book": "已將此手機上的 1 件商品移到共享簿", "Moved {0} items from this phone into the shared book": "已將此手機上的 {0} 件商品移到共享簿", "Shared book": "共享簿", "Right now your prices are saved on this phone only. Turn on sharing so everyone sees the same prices, updated live.": "目前你的價格只儲存在這部手機。開啟共享後，所有人都會看到相同的價格，並即時更新。", "Start a shared book": "開始共享簿", "Join with a link or code": "用連結或代碼加入", "This phone is connected to the shared book. Anyone with the share link can see and edit your prices, so send it only to people you trust.": "這部手機已連接共享簿。任何人只要有分享連結，都能查看和修改價格，所以請只傳給你信任的人。", "Copy share link": "複製分享連結", "Disconnect this phone": "中斷此手機的連接", "Share prices with others?": "要與其他人共享價格嗎？", "Right now this page saves prices on this phone only. Turn on sharing so everyone with the link sees the same prices, updated live.": "目前這個頁面只把價格儲存在這部手機。開啟共享後，所有有連結的人都會看到相同的價格，並即時更新。", "I have a share link or code": "我有分享連結或代碼", "Not now": "暫時不用", "Join the shared book": "加入共享簿", "Paste the share link or code": "貼上分享連結或代碼", "Join": "加入", "That does not look like a share link or code.": "這不像是分享連結或代碼。", "Share link copied": "已複製分享連結", "Share link": "分享連結", "Select all and copy this link, then send it to your friends.": "請全選並複製這個連結，然後傳給你的朋友。", "Disconnect this phone?": "要中斷此手機的連接嗎？", "The shared book stays online for everyone else. This phone goes back to its own private list. You can rejoin later with the share link.": "共享簿會繼續供其他人使用。這部手機會回到自己的私人清單。之後可用分享連結重新加入。", "Disconnect": "中斷連接", "Open the web address first": "請先用網址開啟", "This page is open from a file on your device, so a share link would not work for other people. Upload the page to GitHub, open it from its web address (it starts with https://), then copy the share link there.": "目前是從你裝置上的檔案開啟此頁，所以分享連結對其他人無效。請先把頁面上載到 GitHub，用網址（以 https:// 開頭）開啟，然後在那裡複製分享連結。"};
+const ZH={"Household Price Book": "家居比價簿", "Loading": "載入中", "Sync paused": "同步暫停", "Shared · live": "共享 · 即時同步", "This device only": "只儲存在此裝置", "Language": "語言", "Items": "商品", "Basket": "購物籃", "Shops & backup": "商店與備份", "Sections": "分頁", "Search items or brands": "搜尋商品或品牌", "Search items": "搜尋商品", "+ Add item": "+ 新增商品", "Scan photo": "掃描相片", "Sort items": "排序", "Biggest price gap": "價差最大", "A to Z": "名稱 A 至 Z", "Oldest prices first": "最舊價格優先", "All": "全部", "On my list": "在我的清單", "Needs recheck": "需要重新核對", "pc": "件", "/pc": "/件", "Unit": "單位", "compared by weight": "按重量比較", "compared by volume": "按容量比較", "compared by count": "按數量比較", "{0}. To change this, add a new item.": "{0}。如要更改，請新增另一個商品。", "today": "今日", "{0}d ago": "{0}日前", "{0}w ago": "{0}週前", "{0}mo ago": "{0}個月前", "Removed shop": "已移除的商店", "You can view this book but not change it. Ask the owner for Contributor access.": "你只能查看這本簿，不能修改。請向擁有者索取編輯權限。", "Could not save. Check your connection and try again.": "儲存失敗。請檢查網絡後再試。", "Throat candy bag": "潤喉糖", "Laundry liquid": "洗衣液", "Toilet tissue": "廁紙", "Example brand": "範例品牌", "Delivers": "送貨", "In store": "門市", "Update": "更新", "recheck": "需核對", "Made in {0}": "產地：{0}", "On list": "已在清單", "Add to list": "加入清單", "No prices yet.": "未有價格。", "Cheapest is {0}% below the priciest.": "最平的比最貴的平 {0}%。", "The best price is old, recheck it.": "最平的價格已經過時，請重新核對。", "Add price": "新增價格", "Hide details": "收起詳情", "Details": "詳情", "No history.": "沒有紀錄。", "Delete this price": "刪除此價格", "Delete": "刪除", "Edit item": "編輯商品", "Tap again to delete": "再按一次確認刪除", "Delete item": "刪除商品", "Loading your price book…": "正在載入價格簿…", "These are example items.": "以下是範例商品。", "They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.": "它們示範價格簿如何按每 100 克、每 100 毫升或每件比較各店價格。新增你的第一件商品後，範例就會消失。", "Nothing here": "沒有項目", "No items are on your list yet.": "清單內還沒有商品。", "Every price is under {0} days old.": "所有價格都在 {0} 日內更新。", "No items match your search.": "找不到符合的商品。", "Loading…": "載入中…", "Your basket is empty": "購物籃是空的", "Choose “Add to list” on items you buy regularly. The basket then works out the cheapest place for each one, and whether splitting the order across shops beats one delivery.": "在常買的商品上按「加入清單」，購物籃就會計算每件商品在哪間店最平，以及分開幾間店買是否比一次送貨更划算。", "Go to items": "前往商品", "Need": "需要", "Amount needed of {0}": "{0} 所需數量", "Remove": "移除", "Shopping list": "購物清單", "Amounts are rounded up to whole packs when pricing.": "計價時，數量會進位至整包。", "Cheapest way to buy this list": "買齊這份清單最平的方法", "items {0} + delivery {1}": "商品 {0} + 運費 {1}", "no delivery fees counted": "未計運費", "Splitting saves {0} versus buying everything at {1}.": "分開購買比全部在 {1} 買，可節省 {0}。", "Buying everything at {0} is already the cheapest option.": "全部在 {0} 購買已是最平的選擇。", "{0} delivery": "運費 {0}", "old price": "舊價格", "No price yet for: {0}.": "以下商品未有價格：{0}。", "{0} prices are older than {1} days. Recheck before you order.": "有 {0} 個價格超過 {1} 日未更新，落單前請重新核對。", "1 price is older than {0} days. Recheck before you order.": "有 1 個價格超過 {0} 日未更新，落單前請重新核對。", "Single shop totals": "單一商店總額", "All at {0}": "全部在 {0}", "Delivery fees apply to online shops only, using the amounts in Shops & backup. Store trips count as free.": "運費只適用於網店，金額按「商店與備份」內的設定計算。到門市購買不計運費。", "Shops": "商店", "Enter each online shop’s usual delivery fee and free-delivery minimum so the basket compares real totals.": "請輸入每間網店平時的運費及免運費門檻，購物籃才能比較真實總額。", "Shop name": "商店名稱", "Type": "類型", "Physical store": "實體門市", "Online, delivers": "網店，可送貨", "Delivery fee (HK$)": "運費 (HK$)", "Free delivery from (HK$, 0 = never)": "滿多少免運費 (HK$，0 = 沒有)", "Used by {0} prices": "已有 {0} 個價格使用", "Used by 1 price": "已有 1 個價格使用", "Remove shop": "移除商店", "Your items are saved to the shared book, so everyone with access sees updates live.": "你的商品已儲存在共享簿，有權限的人都會即時看到更新。", "Your items are saved in this browser only. Download a backup now and then.": "你的商品只儲存在此瀏覽器。請不時下載備份。", "New shop": "新增商店", "e.g. Donki, 759": "例如：唐吉訶德、759", "Add shop": "新增商店", "Backup": "備份", "Download backup": "下載備份", "Copy backup": "複製備份", "Restore from file": "從檔案還原", "Enter a shop name.": "請輸入商店名稱。", "Shop": "商店", "Price (HK$)": "價格 (HK$)", "Packs at this price": "此價格包含幾包", "Size of one pack": "每包大小", "Date seen": "日期", "Note": "備註", "member price, 2 for $30…": "會員價、2 件 $30…", "Enter the price.": "請輸入價格。", "Enter the size of one pack, for example 500 ml.": "請輸入每包大小，例如 500 ml。", "Check the price and size.": "請檢查價格和大小。", "Add item": "新增商品", "Item name": "商品名稱", "e.g. Throat candy": "例如：潤喉糖", "Brand": "品牌", "Made in (optional)": "產地（選填）", "Made in": "產地", "Compare by": "比較方式", "Weight (g, kg)": "重量 (g, kg)", "Volume (ml, L)": "容量 (ml, L)", "Count (pieces)": "數量（件）", "First price": "第一個價格", "Cancel": "取消", "Save item": "儲存商品", "Save price": "儲存價格", "Save": "儲存", "Enter the item name.": "請輸入商品名稱。", "Item added": "已新增商品", "Price saved": "已儲存價格", "Update price": "更新價格", "Item deleted": "已刪除商品", "Reading photo…": "正在讀取相片…", "Looking for product names, sizes and prices. This can take up to a minute.": "正在尋找商品名稱、大小和價格，最多可能需要一分鐘。", "Stop": "停止", "No products found in that photo.": "相片中找不到商品。", "Photo reading was not allowed for this page.": "這個頁面未獲准讀取相片。", "Too many requests right now. Try again in a minute.": "目前要求太多，請一分鐘後再試。", "That image could not be used. Try another photo.": "這張相片無法使用，請試另一張。", "Could not find prices in that photo. Try a closer, sharper shot of the tag or receipt.": "相片中找不到價格。請拍近一點、清楚一點的價錢牌或收據。", "Claude could not read that photo.": "Claude 無法讀取這張相片。", "Nothing readable came back. Try a closer photo.": "沒有讀取到內容。請拍近一點再試。", "Sign in again to read photos.": "請重新登入後再讀取相片。", "Photo reading failed. Try again.": "讀取相片失敗，請再試一次。", "Check what was read": "請核對讀取結果", "Fix anything that looks wrong, untick lines you don’t want, then add them.": "請修正錯誤，取消不需要的項目，然後加入。", "Date": "日期", "Include this line": "包含此項", "Product name": "商品名稱", "Which item is this": "對應哪件商品", "New item": "新商品", "Price": "價格", "Packs": "包數", "Size": "大小", "Add selected": "加入已選項目", "Check line {0}: each needs a price, a size and a unit that matches the item.": "請檢查第 {0} 項：每項都需要價格、大小，以及與商品相符的單位。", "Tick at least one line.": "請至少選擇一項。", "Added 1 price": "已加入 1 個價格", "Added {0} prices": "已加入 {0} 個價格", "Backup saved": "已儲存備份", "Could not save the backup file.": "無法儲存備份檔。", "Backup copied": "已複製備份", "Select all and copy this text, then paste it into a note or file.": "請全選並複製以下文字，然後貼到筆記或檔案內。", "Done": "完成", "That file has no price book data.": "這個檔案沒有價格簿資料。", "Restored 1 item": "已還原 1 件商品", "Restored {0} items": "已還原 {0} 件商品", "That file could not be read.": "無法讀取這個檔案。", "This browser blocks saving, so sharing cannot be turned on here.": "此瀏覽器不允許儲存資料，因此無法開啟共享。", "Connecting…": "正在連接…", "Moved 1 item from this phone into the shared book": "已將此手機上的 1 件商品移到共享簿", "Moved {0} items from this phone into the shared book": "已將此手機上的 {0} 件商品移到共享簿", "Shared book": "共享簿", "Right now your prices are saved on this phone only. Turn on sharing so everyone sees the same prices, updated live.": "目前你的價格只儲存在這部手機。開啟共享後，所有人都會看到相同的價格，並即時更新。", "Start a shared book": "開始共享簿", "Join with a link or code": "用連結或代碼加入", "This phone is connected to the shared book. Anyone with the share link can see and edit your prices, so send it only to people you trust.": "這部手機已連接共享簿。任何人只要有分享連結，都能查看和修改價格，所以請只傳給你信任的人。", "Copy share link": "複製分享連結", "Disconnect this phone": "中斷此手機的連接", "Share prices with others?": "要與其他人共享價格嗎？", "Right now this page saves prices on this phone only. Turn on sharing so everyone with the link sees the same prices, updated live.": "目前這個頁面只把價格儲存在這部手機。開啟共享後，所有有連結的人都會看到相同的價格，並即時更新。", "I have a share link or code": "我有分享連結或代碼", "Not now": "暫時不用", "Join the shared book": "加入共享簿", "Paste the share link or code": "貼上分享連結或代碼", "Join": "加入", "That does not look like a share link or code.": "這不像是分享連結或代碼。", "Share link copied": "已複製分享連結", "Share link": "分享連結", "Select all and copy this link, then send it to your friends.": "請全選並複製這個連結，然後傳給你的朋友。", "Disconnect this phone?": "要中斷此手機的連接嗎？", "The shared book stays online for everyone else. This phone goes back to its own private list. You can rejoin later with the share link.": "共享簿會繼續供其他人使用。這部手機會回到自己的私人清單。之後可用分享連結重新加入。", "Disconnect": "中斷連接", "Open the web address first": "請先用網址開啟", "This page is open from a file on your device, so a share link would not work for other people. Upload the page to GitHub, open it from its web address (it starts with https://), then copy the share link there.": "目前是從你裝置上的檔案開啟此頁，所以分享連結對其他人無效。請先把頁面上載到 GitHub，用網址（以 https:// 開頭）開啟，然後在那裡複製分享連結。", "Take photo": "影相", "Retake photo": "重新影相", "Choose from gallery": "從相簿選擇", "Remove photo": "移除相片", "Product photo": "產品相片", "Product photo (optional)": "產品相片（選填）", "Add photo": "加入相片", "That photo could not be used. Try another.": "呢張相用唔到，請試另一張。", "Theme: {0}": "主題：{0}", "Auto": "自動", "Light": "淺色", "Dark": "深色", "Storage on this device is full. Download a backup.": "此裝置儲存空間已滿，請下載備份。"};
+const ICON={
+  cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>',
+  auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg>',
+  light:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>',
+  dark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></svg>'
+};
+const BASE_THEME=document.documentElement.getAttribute('data-theme');
+let THEME='auto';
+try{const t=localStorage.getItem('pb-theme');if(t==='light'||t==='dark')THEME=t}catch{}
+function applyTheme(){
+  const r=document.documentElement;
+  if(THEME==='auto'){if(BASE_THEME)r.setAttribute('data-theme',BASE_THEME);else r.removeAttribute('data-theme')}
+  else r.setAttribute('data-theme',THEME);
+}
+applyTheme();
 let LANG='en';
 try{const sv=localStorage.getItem('pb-lang');LANG=sv==='zh'||sv==='en'?sv:((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en')}catch{}
 const tr=(k,...a)=>{const v=LANG==='zh'&&ZH[k]!==undefined?ZH[k]:k;return v.replace(/\{(\d+)\}/g,(m,i)=>a[+i]??'')};
@@ -315,11 +340,13 @@ function cleanPrice(p){
   const date=/^\d{4}-\d{2}-\d{2}$/.test(p.date)?p.date:today();
   return {id:String(p.id||uid()),t:num(p.t,Date.now()),shop:String(p.shop),price,packs,qty,unit,base:packs*qty*FACTOR[unit],date,note:String(p.note||'').slice(0,100)};
 }
+const PHOTO_HEAD='data:image/jpeg;base64,';
+function cleanPhoto(v){return typeof v==='string'&&v.startsWith(PHOTO_HEAD)&&v.length<=200000&&!/[^A-Za-z0-9+/=,:;]/.test(v)?v:''}
 function cleanItem(x){
   if(!x||typeof x!=='object'||!x.name)return null;
   const type=['w','v','c'].includes(x.type)?x.type:null;if(!type)return null;
   const prices=(Array.isArray(x.prices)?x.prices:[]).map(cleanPrice).filter(p=>p&&TYPE_OF[p.unit]===type);
-  return {id:String(x.id||uid()),name:String(x.name).slice(0,120),brand:String(x.brand||'').slice(0,60),origin:String(x.origin||'').slice(0,60),type,onList:!!x.onList,need:Math.max(0,num(x.need)),prices:prices.slice(-80),created:num(x.created,Date.now())};
+  return {id:String(x.id||uid()),name:String(x.name).slice(0,120),brand:String(x.brand||'').slice(0,60),origin:String(x.origin||'').slice(0,60),type,onList:!!x.onList,need:Math.max(0,num(x.need)),prices:prices.slice(-80),created:num(x.created,Date.now()),photo:cleanPhoto(x.photo)};
 }
 function cleanShop(s){
   if(!s||!s.id||!s.name)return null;
@@ -328,7 +355,7 @@ function cleanShop(s){
 
 /* ---------- storage ---------- */
 function lsLoad(){try{const r=JSON.parse(localStorage.getItem(LS_KEY)||'null');return r&&typeof r==='object'?r:null}catch{return null}}
-function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({items:S.items,shops:S.shops}))}catch{}}
+function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({items:S.items,shops:S.shops}))}catch{toast(tr('Storage on this device is full. Download a backup.'))}}
 const chains=new Map();
 function enqueue(key,fn){const prev=chains.get(key)||Promise.resolve();const next=prev.catch(()=>{}).then(fn);chains.set(key,next);return next}
 function fail(e){toast(e&&e.code==='invalid_argument'?tr('You can view this book but not change it. Ask the owner for Contributor access.'):tr('Could not save. Check your connection and try again.'))}
@@ -375,7 +402,7 @@ function card(it,a,ex){
   const per=PER[it.type],open=S.open.has(it.id);
   const bestAge=a.best?ageDays(a.best.date):0;
   const meta=[it.brand,it.origin&&tr('Made in {0}',it.origin),typeLabel(it.type)].filter(Boolean).map(esc).join(' · ');
-  let h=`<article class="card ${ex?'is-example':''}"><div class="card-h"><div class="ttl"><h2>${esc(it.name)}</h2><p class="sub">${meta}</p></div>`;
+  let h=`<article class="card ${ex?'is-example':''}"><div class="card-h">${ex?'':`<button class="thumb" data-act="photo" data-id="${esc(it.id)}" aria-label="${esc(it.photo?tr('Product photo'):tr('Add photo'))}">${it.photo?`<img src="${it.photo}" alt="">`:ICON.cam}</button>`}<div class="ttl"><h2>${esc(it.name)}</h2><p class="sub">${meta}</p></div>`;
   if(!ex)h+=`<button class="listbtn" data-act="list" data-id="${esc(it.id)}" aria-pressed="${!!it.onList}">${it.onList?tr('On list'):tr('Add to list')}</button>`;
   h+='</div>';
   if(a.best){
@@ -453,6 +480,8 @@ function applyStatic(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=tr(el.getAttribute('data-i18n'))});
   document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=tr(el.getAttribute('data-i18n-ph'))});
   document.querySelectorAll('[data-i18n-aria]').forEach(el=>{el.setAttribute('aria-label',tr(el.getAttribute('data-i18n-aria')))});
+  const tb=$('#theme'),tn={auto:tr('Auto'),light:tr('Light'),dark:tr('Dark')}[THEME];
+  tb.innerHTML=ICON[THEME];const tl=tr('Theme: {0}',tn);tb.title=tl;tb.setAttribute('aria-label',tl);
   const lb=$('#lang');lb.textContent=LANG==='zh'?'English':'中文';lb.setAttribute('aria-label',tr('Language'));
 }
 function syncToolbar(){$('#btn-scan').hidden=!S.canScan}
@@ -509,9 +538,49 @@ function addEntry(it,e){
   it.prices.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:(a.t||0)-(b.t||0));
   if(it.prices.length>80)it.prices=it.prices.slice(-80);
 }
+/* ---------- product photo (camera or gallery) ---------- */
+function shrink(file,max=400,q=.7){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file),im=new Image();
+    im.onload=()=>{
+      URL.revokeObjectURL(url);
+      const r=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.max(1,Math.round(im.naturalWidth*r)),h=Math.max(1,Math.round(im.naturalHeight*r));
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);
+      const out=c.toDataURL('image/jpeg',q);
+      out.startsWith(PHOTO_HEAD)&&out.length<=200000?res(out):rej(new Error('size'));
+    };
+    im.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('img'))};
+    im.src=url;
+  });
+}
+function photoInner(src){
+  return `${src?`<img class="pimg" src="${src}" alt="${esc(tr('Product photo'))}">`:`<div class="pimg none">${ICON.cam}</div>`}<div class="pbtns"><button type="button" class="btn small" data-cam>${src?tr('Retake photo'):tr('Take photo')}</button><button type="button" class="btn small ghost" data-pick>${tr('Choose from gallery')}</button>${src?`<button type="button" class="link danger" data-pdel>${tr('Remove photo')}</button>`:''}</div>`;
+}
+const photoBox=src=>`<div class="pbox" id="pbox">${photoInner(src)}</div>`;
+function bindPhoto(p,sig,set){
+  const mk=cam=>{const i=document.createElement('input');i.type='file';i.accept='image/*';if(cam)i.setAttribute('capture','environment');i.hidden=true;p.appendChild(i);return i};
+  const cam=mk(true),pick=mk(false);
+  const show=src=>{const b=p.querySelector('#pbox');if(b)b.innerHTML=photoInner(src)};
+  const take=async e=>{
+    const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+    try{const src=await shrink(f);set(src);show(src)}catch{toast(tr('That photo could not be used. Try another.'))}
+  };
+  cam.addEventListener('change',take,sig);pick.addEventListener('change',take,sig);
+  p.addEventListener('click',e=>{
+    if(e.target.closest('[data-cam]'))cam.click();
+    else if(e.target.closest('[data-pick]'))pick.click();
+    else if(e.target.closest('[data-pdel]')){set('');show('')}
+  },sig);
+}
+function photoSheet(it){
+  openSheet(`<h2>${tr('Product photo')}</h2><p class="sub">${esc(it.name)}${it.brand?' · '+esc(it.brand):''}</p>${photoBox(it.photo||'')}<div class="row-end"><button class="btn" data-close>${tr('Done')}</button></div>`,(p,sig)=>bindPhoto(p,sig,src=>{it.photo=src;commit(it)}));
+}
 function addSheet(){
+  let photo='';
   openSheet(`<h2>${tr('Add item')}</h2><form id="frm" class="panel-form" style="display:grid;gap:14px">
     <label class="f"><span>${tr('Item name')}</span><input id="f-name" required autocomplete="off" placeholder="${esc(tr('e.g. Throat candy'))}" autofocus></label>
+    <div class="f"><span>${tr('Product photo (optional)')}</span>${photoBox('')}</div>
     <div class="grid2"><label class="f"><span>${tr('Brand')}</span><input id="f-brand" autocomplete="off"></label><label class="f"><span>${tr('Made in (optional)')}</span><input id="f-origin" autocomplete="off"></label></div>
     <fieldset><legend>${tr('Compare by')}</legend><div class="seg">
       <label><input type="radio" name="type" value="w" checked><span>${tr('Weight (g, kg)')}</span></label>
@@ -520,13 +589,14 @@ function addSheet(){
     <h3>${tr('First price')}</h3>${priceForm('w')}
     <p class="err" id="err" role="alert"></p>
     <div class="row-end"><button type="button" class="btn ghost" data-close>${tr('Cancel')}</button><button class="btn" type="submit">${tr('Save item')}</button></div></form>`,(p,sig)=>{
+    bindPhoto(p,sig,src=>{photo=src});
     p.addEventListener('change',e=>{if(e.target.name==='type')$('#f-unit').innerHTML=unitOpts(e.target.value)},sig);
     p.addEventListener('submit',e=>{
       e.preventDefault();
       const name=$('#f-name').value.trim();if(!name){$('#err').textContent=tr('Enter the item name.');return}
       const r=readPriceForm();if(r.error){$('#err').textContent=r.error;return}
       const type=p.querySelector('input[name=type]:checked').value;
-      const it={id:uid(),name,brand:$('#f-brand').value.trim(),origin:$('#f-origin').value.trim(),type,onList:false,need:0,prices:[r],created:Date.now()};
+      const it={id:uid(),name,brand:$('#f-brand').value.trim(),origin:$('#f-origin').value.trim(),type,onList:false,need:0,prices:[r],created:Date.now(),photo};
       S.items.push(it);saveItem(it);S.tab='items';closeSheet();render();toast(tr('Item added'));
     },sig);
   });
@@ -544,12 +614,15 @@ function priceSheet(it,pid){
   });
 }
 function editSheet(it){
+  let photo=it.photo||'';
   openSheet(`<h2>${tr('Edit item')}</h2><form id="frm" style="display:grid;gap:14px">
     <label class="f"><span>${tr('Item name')}</span><input id="f-name" required value="${esc(it.name)}" autofocus></label>
+    <div class="f"><span>${tr('Product photo (optional)')}</span>${photoBox(it.photo||'')}</div>
     <div class="grid2"><label class="f"><span>${tr('Brand')}</span><input id="f-brand" value="${esc(it.brand)}"></label><label class="f"><span>${tr('Made in')}</span><input id="f-origin" value="${esc(it.origin)}"></label></div>
     <p class="sub">${esc(tr('{0}. To change this, add a new item.',cap(typeLabel(it.type))))}</p>
     <div class="row-end"><button type="button" class="btn ghost" data-close>${tr('Cancel')}</button><button class="btn" type="submit">${tr('Save')}</button></div></form>`,(p,sig)=>{
-    p.addEventListener('submit',e=>{e.preventDefault();const n=$('#f-name').value.trim();if(!n)return;it.name=n;it.brand=$('#f-brand').value.trim();it.origin=$('#f-origin').value.trim();commit(it);closeSheet()},sig);
+    bindPhoto(p,sig,src=>{photo=src});
+    p.addEventListener('submit',e=>{e.preventDefault();const n=$('#f-name').value.trim();if(!n)return;it.name=n;it.photo=photo;it.brand=$('#f-brand').value.trim();it.origin=$('#f-origin').value.trim();commit(it);closeSheet()},sig);
   });
 }
 
@@ -677,12 +750,13 @@ async function restoreFrom(file){
 /* ---------- events ---------- */
 function act(a,d){
   const it=d.id&&S.items.find(i=>i.id===d.id);
-  if(['list','upd','addprice','edit','toggle','del','histdel'].includes(a)&&!it)return;
+  if(['list','upd','addprice','edit','toggle','del','histdel','photo'].includes(a)&&!it)return;
   switch(a){
     case 'list':it.onList=!it.onList;if(it.onList&&!(it.need>0))it.need=analyze(it).best?.base||1;commit(it);break;
     case 'upd':priceSheet(it,d.pid);break;
     case 'addprice':priceSheet(it);break;
     case 'edit':editSheet(it);break;
+    case 'photo':photoSheet(it);break;
     case 'toggle':S.open.has(it.id)?S.open.delete(it.id):S.open.add(it.id);render();break;
     case 'del':
       if(S.confirm===it.id){S.confirm=null;S.open.delete(it.id);removeItem(it.id);render();toast(tr('Item deleted'))}
@@ -714,6 +788,7 @@ function wire(){
   $('#sort').addEventListener('change',e=>{S.sort=e.target.value;render()});
   $('#chips').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;S.filter=b.dataset.f;document.querySelectorAll('#chips .chip').forEach(c=>c.setAttribute('aria-pressed',String(c===b)));render()});
   $('#btn-add').addEventListener('click',addSheet);
+  $('#theme').addEventListener('click',()=>{THEME={auto:'light',light:'dark',dark:'auto'}[THEME];try{THEME==='auto'?localStorage.removeItem('pb-theme'):localStorage.setItem('pb-theme',THEME)}catch{}applyTheme();render();toast(tr('Theme: {0}',{auto:tr('Auto'),light:tr('Light'),dark:tr('Dark')}[THEME]))});
   $('#lang').addEventListener('click',()=>{LANG=LANG==='en'?'zh':'en';try{localStorage.setItem('pb-lang',LANG)}catch{}render()});
   $('#btn-scan').addEventListener('click',pickPhoto);
   $('#photo').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(f)startScan(f)});
