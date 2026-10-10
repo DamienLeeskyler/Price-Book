@@ -569,6 +569,19 @@ function closeSheet(){
   $('#sheet').hidden=true;document.body.style.overflow='';S.scan=null;
 }
 const unitOpts=(type,sel)=>UNITS[type].map(u=>`<option value="${u}" ${u===sel?'selected':''}>${uShow(u)}</option>`).join('');
+function whereSuggest(shopId){
+  const n=new Map();
+  S.items.forEach(it=>(it.prices||[]).forEach(p=>{
+    if(p.shop!==shopId||!p.where)return;
+    const k=p.where.trim().toLowerCase(),e=n.get(k);
+    if(e){e.n++;if((p.t||0)>e.t)e.t=p.t||0}else n.set(k,{w:p.where.trim(),n:1,t:p.t||0});
+  }));
+  return [...n.values()].sort((a,b)=>b.n-a.n||b.t-a.t).slice(0,30).map(e=>e.w);
+}
+const whereOpts=shopId=>whereSuggest(shopId).map(w=>`<option value="${esc(w)}"></option>`).join('');
+function bindWhere(p,sig){
+  p.addEventListener('change',e=>{if(e.target.id==='f-shop'){const d=p.querySelector('#dl-where');if(d)d.innerHTML=whereOpts(e.target.value)}},sig);
+}
 function priceForm(type,v={}){
   const shops=S.shops.map(s=>`<option value="${esc(s.id)}" ${s.id===v.shop?'selected':''}>${esc(s.name)}</option>`).join('');
   return `<div class="grid2">
@@ -578,7 +591,7 @@ function priceForm(type,v={}){
     <label class="f"><span>${tr('Size of one pack')}</span><div class="inline"><input id="f-qty" type="number" inputmode="decimal" step="any" min="0" value="${v.qty??''}"><select id="f-unit">${unitOpts(type,v.unit)}</select></div></label>
     <label class="f"><span>${tr('Date seen')}</span><input id="f-date" type="date" value="${esc(v.date||today())}"></label>
     <label class="f"><span>${tr('Note')}</span><input id="f-note" placeholder="${esc(tr('member price, 2 for $30…'))}" value="${esc(v.note||'')}"></label>
-    <label class="f span2"><span>${tr('Branch or aisle (optional)')}</span><input id="f-where" maxlength="60" placeholder="${esc(tr('e.g. Mei Foo branch, back wall'))}" value="${esc(v.where||'')}"></label>
+    <label class="f span2"><span>${tr('Branch or aisle (optional)')}</span><input id="f-where" maxlength="60" list="dl-where" autocomplete="off" placeholder="${esc(tr('e.g. Mei Foo branch, back wall'))}" value="${esc(v.where||'')}"><datalist id="dl-where">${whereOpts(v.shop||(S.shops[0]&&S.shops[0].id))}</datalist></label>
     <label class="f span2"><span>${tr('Link to product page (optional)')}</span><input id="f-link" type="text" inputmode="url" autocapitalize="none" autocomplete="off" placeholder="https://" value="${esc(v.link||'')}"></label></div>`;
 }
 function readPriceForm(){
@@ -647,6 +660,7 @@ function addSheet(){
     <h3>${tr('First price')}</h3>${priceForm('w')}
     <p class="err" id="err" role="alert"></p>
     <div class="row-end"><button type="button" class="btn ghost" data-close>${tr('Cancel')}</button><button class="btn" type="submit">${tr('Save item')}</button></div></form>`,(p,sig)=>{
+    bindWhere(p,sig);
     bindPhoto(p,sig,src=>{photo=src});
     p.addEventListener('change',e=>{if(e.target.name==='type')$('#f-unit').innerHTML=unitOpts(e.target.value)},sig);
     p.addEventListener('submit',e=>{
@@ -665,6 +679,7 @@ function priceSheet(it,pid){
     ${priceForm(it.type,{shop:ref.shop,packs:ref.packs,qty:ref.qty,unit:ref.unit,focusPrice:true,link:pid?ref.link:'',where:pid?ref.where:''})}
     <p class="err" id="err" role="alert"></p>
     <div class="row-end"><button type="button" class="btn ghost" data-close>${tr('Cancel')}</button><button class="btn" type="submit">${tr('Save price')}</button></div></form>`,(p,sig)=>{
+    bindWhere(p,sig);
     p.addEventListener('change',e=>{if(e.target.id==='f-shop')['f-link','f-where'].forEach(id=>{const el=$('#'+id);if(el&&el.value===el.defaultValue)el.value=''})},sig);
     p.addEventListener('submit',e=>{
       e.preventDefault();const r=readPriceForm();if(r.error){$('#err').textContent=r.error;return}
