@@ -177,6 +177,8 @@ textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);colo
 .spin{width:28px;height:28px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--ink);animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.toast-act{margin-left:6px;padding:0 6px;min-height:36px;background:none;border:0;color:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+.trash-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding-block:8px;border-top:1px solid var(--line)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--primary);color:var(--primary-ink);padding:10px 16px;border-radius:99px;font-weight:600;font-size:14px;z-index:30;max-width:calc(100% - 32px);text-align:center}
 @media (pointer:coarse){
   .btn.small,.chip,.listbtn{min-height:44px}
@@ -234,7 +236,22 @@ textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);colo
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /* ---------- language ---------- */
-const ZH={"Household Price Book": "家居比價簿", "Loading": "載入中", "Sync paused": "同步暫停", "Shared · live": "共享 · 即時同步", "This device only": "只儲存在此裝置", "Language": "語言", "Items": "商品", "Basket": "購物籃", "Shops & backup": "商店與備份", "Sections": "分頁", "Search items or brands": "搜尋商品或品牌", "Search items": "搜尋商品", "+ Add item": "+ 新增商品", "Scan photo": "掃描相片", "Sort items": "排序", "Biggest price gap": "價差最大", "A to Z": "名稱 A 至 Z", "Oldest prices first": "最舊價格優先", "All": "全部", "On my list": "在我的清單", "Needs recheck": "需要重新核對", "pc": "件", "/pc": "/件", "Unit": "單位", "compared by weight": "按重量比較", "compared by volume": "按容量比較", "compared by count": "按數量比較", "{0}. To change this, add a new item.": "{0}。如要更改，請新增另一個商品。", "today": "今日", "{0}d ago": "{0}日前", "{0}w ago": "{0}週前", "{0}mo ago": "{0}個月前", "Removed shop": "已移除的商店", "You can view this book but not change it. Ask the owner for Contributor access.": "你只能查看這本簿，不能修改。請向擁有者索取編輯權限。", "Could not save. Check your connection and try again.": "儲存失敗。請檢查網絡後再試。", "Throat candy bag": "潤喉糖", "Laundry liquid": "洗衣液", "Toilet tissue": "廁紙", "Example brand": "範例品牌", "Delivers": "送貨", "In store": "門市", "Update": "更新", "recheck": "需核對", "Made in {0}": "產地：{0}", "On list": "已在清單", "Add to list": "加入清單", "No prices yet.": "未有價格。", "Cheapest is {0}% below the priciest.": "最平的比最貴的平 {0}%。", "The best price is old, recheck it.": "最平的價格已經過時，請重新核對。", "Add price": "新增價格", "Hide details": "收起詳情", "Details": "詳情", "No history.": "沒有紀錄。", "Delete this price": "刪除此價格", "Delete": "刪除", "Edit item": "編輯商品", "Tap again to delete": "再按一次確認刪除", "Delete item": "刪除商品", "Loading your price book…": "正在載入價格簿…", "These are example items.": "以下是範例商品。", "They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.": "它們示範價格簿如何按每 100 克、每 100 毫升或每件比較各店價格。新增你的第一件商品後，範例就會消失。", "Nothing here": "沒有項目", "No items are on your list yet.": "清單內還沒有商品。", "Every price is under {0} days old.": "所有價格都在 {0} 日內更新。", "No items match your search.": "找不到符合的商品。", "Loading…": "載入中…", "Your basket is empty": "購物籃是空的", "Choose “Add to list” on items you buy regularly. The basket then works out the cheapest place for each one, and whether splitting the order across shops beats one delivery.": "在常買的商品上按「加入清單」，購物籃就會計算每件商品在哪間店最平，以及分開幾間店買是否比一次送貨更划算。", "Go to items": "前往商品", "Need": "需要", "Amount needed of {0}": "{0} 所需數量", "Remove": "移除", "Shopping list": "購物清單", "Amounts are rounded up to whole packs when pricing.": "計價時，數量會進位至整包。", "Cheapest way to buy this list": "買齊這份清單最平的方法", "items {0} + delivery {1}": "商品 {0} + 運費 {1}", "no delivery fees counted": "未計運費", "Splitting saves {0} versus buying everything at {1}.": "分開購買比全部在 {1} 買，可節省 {0}。", "Buying everything at {0} is already the cheapest option.": "全部在 {0} 購買已是最平的選擇。", "{0} delivery": "運費 {0}", "old price": "舊價格", "No price yet for: {0}.": "以下商品未有價格：{0}。", "{0} prices are older than {1} days. Recheck before you order.": "有 {0} 個價格超過 {1} 日未更新，落單前請重新核對。", "1 price is older than {0} days. Recheck before you order.": "有 1 個價格超過 {0} 日未更新，落單前請重新核對。", "Single shop totals": "單一商店總額", "All at {0}": "全部在 {0}", "Delivery fees apply to online shops only, using the amounts in Shops & backup. Store trips count as free.": "運費只適用於網店，金額按「商店與備份」內的設定計算。到門市購買不計運費。", "Shops": "商店", "Enter each online shop’s usual delivery fee and free-delivery minimum so the basket compares real totals.": "請輸入每間網店平時的運費及免運費門檻，購物籃才能比較真實總額。", "Shop name": "商店名稱", "Type": "類型", "Physical store": "實體門市", "Online, delivers": "網店，可送貨", "Delivery fee (HK$)": "運費 (HK$)", "Free delivery from (HK$, 0 = never)": "滿多少免運費 (HK$，0 = 沒有)", "Used by {0} prices": "已有 {0} 個價格使用", "Used by 1 price": "已有 1 個價格使用", "Remove shop": "移除商店", "Your items are saved to the shared book, so everyone with access sees updates live.": "你的商品已儲存在共享簿，有權限的人都會即時看到更新。", "Your items are saved in this browser only. Download a backup now and then.": "你的商品只儲存在此瀏覽器。請不時下載備份。", "New shop": "新增商店", "e.g. Donki, 759": "例如：唐吉訶德、759", "Add shop": "新增商店", "Backup": "備份", "Download backup": "下載備份", "Copy backup": "複製備份", "Restore from file": "從檔案還原", "Enter a shop name.": "請輸入商店名稱。", "Shop": "商店", "Price (HK$)": "價格 (HK$)", "Packs at this price": "此價格包含幾包", "Size of one pack": "每包大小", "Date seen": "日期", "Note": "備註", "member price, 2 for $30…": "會員價、2 件 $30…", "Enter the price.": "請輸入價格。", "Enter the size of one pack, for example 500 ml.": "請輸入每包大小，例如 500 ml。", "Check the price and size.": "請檢查價格和大小。", "Add item": "新增商品", "Item name": "商品名稱", "e.g. Throat candy": "例如：潤喉糖", "Brand": "品牌", "Made in (optional)": "產地（選填）", "Made in": "產地", "Compare by": "比較方式", "Weight (g, kg)": "重量 (g, kg)", "Volume (ml, L)": "容量 (ml, L)", "Count (pieces)": "數量（件）", "First price": "第一個價格", "Cancel": "取消", "Save item": "儲存商品", "Save price": "儲存價格", "Save": "儲存", "Enter the item name.": "請輸入商品名稱。", "Item added": "已新增商品", "Price saved": "已儲存價格", "Update price": "更新價格", "Item deleted": "已刪除商品", "Reading photo…": "正在讀取相片…", "Looking for product names, sizes and prices. This can take up to a minute.": "正在尋找商品名稱、大小和價格，最多可能需要一分鐘。", "Stop": "停止", "No products found in that photo.": "相片中找不到商品。", "Photo reading was not allowed for this page.": "這個頁面未獲准讀取相片。", "Too many requests right now. Try again in a minute.": "目前要求太多，請一分鐘後再試。", "That image could not be used. Try another photo.": "這張相片無法使用，請試另一張。", "Could not find prices in that photo. Try a closer, sharper shot of the tag or receipt.": "相片中找不到價格。請拍近一點、清楚一點的價錢牌或收據。", "Claude could not read that photo.": "Claude 無法讀取這張相片。", "Nothing readable came back. Try a closer photo.": "沒有讀取到內容。請拍近一點再試。", "Sign in again to read photos.": "請重新登入後再讀取相片。", "Photo reading failed. Try again.": "讀取相片失敗，請再試一次。", "Check what was read": "請核對讀取結果", "Fix anything that looks wrong, untick lines you don’t want, then add them.": "請修正錯誤，取消不需要的項目，然後加入。", "Date": "日期", "Include this line": "包含此項", "Product name": "商品名稱", "Which item is this": "對應哪件商品", "New item": "新商品", "Price": "價格", "Packs": "包數", "Size": "大小", "Add selected": "加入已選項目", "Check line {0}: each needs a price, a size and a unit that matches the item.": "請檢查第 {0} 項：每項都需要價格、大小，以及與商品相符的單位。", "Tick at least one line.": "請至少選擇一項。", "Added 1 price": "已加入 1 個價格", "Added {0} prices": "已加入 {0} 個價格", "Backup saved": "已儲存備份", "Could not save the backup file.": "無法儲存備份檔。", "Backup copied": "已複製備份", "Select all and copy this text, then paste it into a note or file.": "請全選並複製以下文字，然後貼到筆記或檔案內。", "Done": "完成", "That file has no price book data.": "這個檔案沒有價格簿資料。", "Restored 1 item": "已還原 1 件商品", "Restored {0} items": "已還原 {0} 件商品", "That file could not be read.": "無法讀取這個檔案。", "This browser blocks saving, so sharing cannot be turned on here.": "此瀏覽器不允許儲存資料，因此無法開啟共享。", "Connecting…": "正在連接…", "Moved 1 item from this phone into the shared book": "已將此手機上的 1 件商品移到共享簿", "Moved {0} items from this phone into the shared book": "已將此手機上的 {0} 件商品移到共享簿", "Shared book": "共享簿", "Right now your prices are saved on this phone only. Turn on sharing so everyone sees the same prices, updated live.": "目前你的價格只儲存在這部手機。開啟共享後，所有人都會看到相同的價格，並即時更新。", "Start a shared book": "開始共享簿", "Join with a link or code": "用連結或代碼加入", "This phone is connected to the shared book. Anyone with the share link can see and edit your prices, so send it only to people you trust.": "這部手機已連接共享簿。任何人只要有分享連結，都能查看和修改價格，所以請只傳給你信任的人。", "Copy share link": "複製分享連結", "Disconnect this phone": "中斷此手機的連接", "Share prices with others?": "要與其他人共享價格嗎？", "Right now this page saves prices on this phone only. Turn on sharing so everyone with the link sees the same prices, updated live.": "目前這個頁面只把價格儲存在這部手機。開啟共享後，所有有連結的人都會看到相同的價格，並即時更新。", "I have a share link or code": "我有分享連結或代碼", "Not now": "暫時不用", "Join the shared book": "加入共享簿", "Paste the share link or code": "貼上分享連結或代碼", "Join": "加入", "That does not look like a share link or code.": "這不像是分享連結或代碼。", "Share link copied": "已複製分享連結", "Share link": "分享連結", "Select all and copy this link, then send it to your friends.": "請全選並複製這個連結，然後傳給你的朋友。", "Disconnect this phone?": "要中斷此手機的連接嗎？", "The shared book stays online for everyone else. This phone goes back to its own private list. You can rejoin later with the share link.": "共享簿會繼續供其他人使用。這部手機會回到自己的私人清單。之後可用分享連結重新加入。", "Disconnect": "中斷連接", "Open the web address first": "請先用網址開啟", "This page is open from a file on your device, so a share link would not work for other people. Upload the page to GitHub, open it from its web address (it starts with https://), then copy the share link there.": "目前是從你裝置上的檔案開啟此頁，所以分享連結對其他人無效。請先把頁面上載到 GitHub，用網址（以 https:// 開頭）開啟，然後在那裡複製分享連結。", "Take photo": "影相", "Retake photo": "重新影相", "Choose from gallery": "從相簿選擇", "Remove photo": "移除相片", "Product photo": "產品相片", "Product photo (optional)": "產品相片（選填）", "Add photo": "加入相片", "That photo could not be used. Try another.": "呢張相用唔到，請試另一張。", "Theme: {0}": "主題：{0}", "Auto": "自動", "Light": "淺色", "Dark": "深色", "Storage on this device is full. Download a backup.": "此裝置儲存空間已滿，請下載備份。", "Link to product page (optional)": "產品頁面連結（選填）", "Branch or aisle (optional)": "分店或貨架位置（選填）", "e.g. Mei Foo branch, back wall": "例如：美孚分店、後牆貨架", "That link does not look right. Paste the full web address.": "連結似乎不正確，請貼上完整網址。", "Open page": "開啟頁面", "Map": "地圖", "Category (optional)": "分類（選填）", "Category": "分類", "Not set": "未分類", "All categories": "所有分類", "By category": "按分類排列", "Meat & seafood": "肉類及海鮮", "Fruit & vegetables": "蔬果", "Pantry & groceries": "糧油雜貨", "Snacks & drinks": "零食及飲品", "Dairy & frozen": "奶類及急凍食品", "Cleaning & laundry": "清潔及洗衣", "Household consumables": "家居耗材", "Personal care": "個人護理", "Baby": "嬰兒用品", "Pets": "寵物用品", "Health & vitamins": "保健及維他命", "Other": "其他", "Type the shop name.": "請輸入商店名稱。", "Delivery fees can be set later in Shops & backup.": "送貨費可稍後在「商店與備份」設定。", "+ Other shop…": "＋ 其他商店…"};
+const ZH={"Household Price Book": "家居比價簿", "Loading": "載入中", "Sync paused": "同步暫停", "Shared · live": "共享 · 即時同步", "This device only": "只儲存在此裝置", "Language": "語言", "Items": "商品", "Basket": "購物籃", "Shops & backup": "商店與備份", "Sections": "分頁", "Search items or brands": "搜尋商品或品牌", "Search items": "搜尋商品", "+ Add item": "+ 新增商品", "Scan photo": "掃描相片", "Sort items": "排序", "Biggest price gap": "價差最大", "A to Z": "名稱 A 至 Z", "Oldest prices first": "最舊價格優先", "All": "全部", "On my list": "在我的清單", "Needs recheck": "需要重新核對", "pc": "件", "/pc": "/件", "Unit": "單位", "compared by weight": "按重量比較", "compared by volume": "按容量比較", "compared by count": "按數量比較", "{0}. To change this, add a new item.": "{0}。如要更改，請新增另一個商品。", "today": "今日", "{0}d ago": "{0}日前", "{0}w ago": "{0}週前", "{0}mo ago": "{0}個月前", "Removed shop": "已移除的商店", "You can view this book but not change it. Ask the owner for Contributor access.": "你只能查看這本簿，不能修改。請向擁有者索取編輯權限。", "Could not save. Check your connection and try again.": "儲存失敗。請檢查網絡後再試。", "Throat candy bag": "潤喉糖", "Laundry liquid": "洗衣液", "Toilet tissue": "廁紙", "Example brand": "範例品牌", "Delivers": "送貨", "In store": "門市", "Update": "更新", "recheck": "需核對", "Made in {0}": "產地：{0}", "On list": "已在清單", "Add to list": "加入清單", "No prices yet.": "未有價格。", "Cheapest is {0}% below the priciest.": "最平的比最貴的平 {0}%。", "The best price is old, recheck it.": "最平的價格已經過時，請重新核對。", "Add price": "新增價格", "Hide details": "收起詳情", "Details": "詳情", "No history.": "沒有紀錄。", "Delete this price": "刪除此價格", "Delete": "刪除", "Edit item": "編輯商品", "Tap again to delete": "再按一次確認刪除", "Delete item": "刪除商品", "Loading your price book…": "正在載入價格簿…", "These are example items.": "以下是範例商品。", "They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.": "它們示範價格簿如何按每 100 克、每 100 毫升或每件比較各店價格。新增你的第一件商品後，範例就會消失。", "Nothing here": "沒有項目", "No items are on your list yet.": "清單內還沒有商品。", "Every price is under {0} days old.": "所有價格都在 {0} 日內更新。", "No items match your search.": "找不到符合的商品。", "Loading…": "載入中…", "Your basket is empty": "購物籃是空的", "Choose “Add to list” on items you buy regularly. The basket then works out the cheapest place for each one, and whether splitting the order across shops beats one delivery.": "在常買的商品上按「加入清單」，購物籃就會計算每件商品在哪間店最平，以及分開幾間店買是否比一次送貨更划算。", "Go to items": "前往商品", "Need": "需要", "Amount needed of {0}": "{0} 所需數量", "Remove": "移除", "Shopping list": "購物清單", "Amounts are rounded up to whole packs when pricing.": "計價時，數量會進位至整包。", "Cheapest way to buy this list": "買齊這份清單最平的方法", "items {0} + delivery {1}": "商品 {0} + 運費 {1}", "no delivery fees counted": "未計運費", "Splitting saves {0} versus buying everything at {1}.": "分開購買比全部在 {1} 買，可節省 {0}。", "Buying everything at {0} is already the cheapest option.": "全部在 {0} 購買已是最平的選擇。", "{0} delivery": "運費 {0}", "old price": "舊價格", "No price yet for: {0}.": "以下商品未有價格：{0}。", "{0} prices are older than {1} days. Recheck before you order.": "有 {0} 個價格超過 {1} 日未更新，落單前請重新核對。", "1 price is older than {0} days. Recheck before you order.": "有 1 個價格超過 {0} 日未更新，落單前請重新核對。", "Single shop totals": "單一商店總額", "All at {0}": "全部在 {0}", "Delivery fees apply to online shops only, using the amounts in Shops & backup. Store trips count as free.": "運費只適用於網店，金額按「商店與備份」內的設定計算。到門市購買不計運費。", "Shops": "商店", "Enter each online shop’s usual delivery fee and free-delivery minimum so the basket compares real totals.": "請輸入每間網店平時的運費及免運費門檻，購物籃才能比較真實總額。", "Shop name": "商店名稱", "Type": "類型", "Physical store": "實體門市", "Online, delivers": "網店，可送貨", "Delivery fee (HK$)": "運費 (HK$)", "Free delivery from (HK$, 0 = never)": "滿多少免運費 (HK$，0 = 沒有)", "Used by {0} prices": "已有 {0} 個價格使用", "Used by 1 price": "已有 1 個價格使用", "Remove shop": "移除商店", "Your items are saved to the shared book, so everyone with access sees updates live.": "你的商品已儲存在共享簿，有權限的人都會即時看到更新。", "Your items are saved in this browser only. Download a backup now and then.": "你的商品只儲存在此瀏覽器。請不時下載備份。", "New shop": "新增商店", "e.g. Donki, 759": "例如：唐吉訶德、759", "Add shop": "新增商店", "Backup": "備份", "Download backup": "下載備份", "Copy backup": "複製備份", "Restore from file": "從檔案還原", "Enter a shop name.": "請輸入商店名稱。", "Shop": "商店", "Price (HK$)": "價格 (HK$)", "Packs at this price": "此價格包含幾包", "Size of one pack": "每包大小", "Date seen": "日期", "Note": "備註", "member price, 2 for $30…": "會員價、2 件 $30…", "Enter the price.": "請輸入價格。", "Enter the size of one pack, for example 500 ml.": "請輸入每包大小，例如 500 ml。", "Check the price and size.": "請檢查價格和大小。", "Add item": "新增商品", "Item name": "商品名稱", "e.g. Throat candy": "例如：潤喉糖", "Brand": "品牌", "Made in (optional)": "產地（選填）", "Made in": "產地", "Compare by": "比較方式", "Weight (g, kg)": "重量 (g, kg)", "Volume (ml, L)": "容量 (ml, L)", "Count (pieces)": "數量（件）", "First price": "第一個價格", "Cancel": "取消", "Save item": "儲存商品", "Save price": "儲存價格", "Save": "儲存", "Enter the item name.": "請輸入商品名稱。", "Item added": "已新增商品", "Price saved": "已儲存價格", "Update price": "更新價格", "Item deleted": "已刪除商品", "Reading photo…": "正在讀取相片…", "Looking for product names, sizes and prices. This can take up to a minute.": "正在尋找商品名稱、大小和價格，最多可能需要一分鐘。", "Stop": "停止", "No products found in that photo.": "相片中找不到商品。", "Photo reading was not allowed for this page.": "這個頁面未獲准讀取相片。", "Too many requests right now. Try again in a minute.": "目前要求太多，請一分鐘後再試。", "That image could not be used. Try another photo.": "這張相片無法使用，請試另一張。", "Could not find prices in that photo. Try a closer, sharper shot of the tag or receipt.": "相片中找不到價格。請拍近一點、清楚一點的價錢牌或收據。", "Claude could not read that photo.": "Claude 無法讀取這張相片。", "Nothing readable came back. Try a closer photo.": "沒有讀取到內容。請拍近一點再試。", "Sign in again to read photos.": "請重新登入後再讀取相片。", "Photo reading failed. Try again.": "讀取相片失敗，請再試一次。", "Check what was read": "請核對讀取結果", "Fix anything that looks wrong, untick lines you don’t want, then add them.": "請修正錯誤，取消不需要的項目，然後加入。", "Date": "日期", "Include this line": "包含此項", "Product name": "商品名稱", "Which item is this": "對應哪件商品", "New item": "新商品", "Price": "價格", "Packs": "包數", "Size": "大小", "Add selected": "加入已選項目", "Check line {0}: each needs a price, a size and a unit that matches the item.": "請檢查第 {0} 項：每項都需要價格、大小，以及與商品相符的單位。", "Tick at least one line.": "請至少選擇一項。", "Added 1 price": "已加入 1 個價格", "Added {0} prices": "已加入 {0} 個價格", "Backup saved": "已儲存備份", "Could not save the backup file.": "無法儲存備份檔。", "Backup copied": "已複製備份", "Select all and copy this text, then paste it into a note or file.": "請全選並複製以下文字，然後貼到筆記或檔案內。", "Done": "完成", "That file has no price book data.": "這個檔案沒有價格簿資料。", "Restored 1 item": "已還原 1 件商品", "Restored {0} items": "已還原 {0} 件商品", "That file could not be read.": "無法讀取這個檔案。", "This browser blocks saving, so sharing cannot be turned on here.": "此瀏覽器不允許儲存資料，因此無法開啟共享。", "Connecting…": "正在連接…", "Moved 1 item from this phone into the shared book": "已將此手機上的 1 件商品移到共享簿", "Moved {0} items from this phone into the shared book": "已將此手機上的 {0} 件商品移到共享簿", "Shared book": "共享簿", "Right now your prices are saved on this phone only. Turn on sharing so everyone sees the same prices, updated live.": "目前你的價格只儲存在這部手機。開啟共享後，所有人都會看到相同的價格，並即時更新。", "Start a shared book": "開始共享簿", "Join with a link or code": "用連結或代碼加入", "This phone is connected to the shared book. Anyone with the share link can see and edit your prices, so send it only to people you trust.": "這部手機已連接共享簿。任何人只要有分享連結，都能查看和修改價格，所以請只傳給你信任的人。", "Copy share link": "複製分享連結", "Disconnect this phone": "中斷此手機的連接", "Share prices with others?": "要與其他人共享價格嗎？", "Right now this page saves prices on this phone only. Turn on sharing so everyone with the link sees the same prices, updated live.": "目前這個頁面只把價格儲存在這部手機。開啟共享後，所有有連結的人都會看到相同的價格，並即時更新。", "I have a share link or code": "我有分享連結或代碼", "Not now": "暫時不用", "Join the shared book": "加入共享簿", "Paste the share link or code": "貼上分享連結或代碼", "Join": "加入", "That does not look like a share link or code.": "這不像是分享連結或代碼。", "Share link copied": "已複製分享連結", "Share link": "分享連結", "Select all and copy this link, then send it to your friends.": "請全選並複製這個連結，然後傳給你的朋友。", "Disconnect this phone?": "要中斷此手機的連接嗎？", "The shared book stays online for everyone else. This phone goes back to its own private list. You can rejoin later with the share link.": "共享簿會繼續供其他人使用。這部手機會回到自己的私人清單。之後可用分享連結重新加入。", "Disconnect": "中斷連接", "Open the web address first": "請先用網址開啟", "This page is open from a file on your device, so a share link would not work for other people. Upload the page to GitHub, open it from its web address (it starts with https://), then copy the share link there.": "目前是從你裝置上的檔案開啟此頁，所以分享連結對其他人無效。請先把頁面上載到 GitHub，用網址（以 https:// 開頭）開啟，然後在那裡複製分享連結。", "Take photo": "影相", "Retake photo": "重新影相", "Choose from gallery": "從相簿選擇", "Remove photo": "移除相片", "Product photo": "產品相片", "Product photo (optional)": "產品相片（選填）", "Add photo": "加入相片", "That photo could not be used. Try another.": "呢張相用唔到，請試另一張。", "Theme: {0}": "主題：{0}", "Auto": "自動", "Light": "淺色", "Dark": "深色", "Storage on this device is full. Download a backup.": "此裝置儲存空間已滿，請下載備份。", "Link to product page (optional)": "產品頁面連結（選填）", "Branch or aisle (optional)": "分店或貨架位置（選填）", "e.g. Mei Foo branch, back wall": "例如：美孚分店、後牆貨架", "That link does not look right. Paste the full web address.": "連結似乎不正確，請貼上完整網址。", "Open page": "開啟頁面", "Map": "地圖", "Category (optional)": "分類（選填）", "Category": "分類", "Not set": "未分類", "All categories": "所有分類", "By category": "按分類排列", "Meat & seafood": "肉類及海鮮", "Fruit & vegetables": "蔬果", "Pantry & groceries": "糧油雜貨", "Snacks & drinks": "零食及飲品", "Dairy & frozen": "奶類及急凍食品", "Cleaning & laundry": "清潔及洗衣", "Household consumables": "家居耗材", "Personal care": "個人護理", "Baby": "嬰兒用品", "Pets": "寵物用品", "Health & vitamins": "保健及維他命", "Other": "其他", "Type the shop name.": "請輸入商店名稱。", "Delivery fees can be set later in Shops & backup.": "送貨費可稍後在「商店與備份」設定。", "+ Other shop…": "＋ 其他商店…", "Undo": "復原", "Price deleted": "已刪除價格", "Item restored": "已還原商品", "✓ Same price": "✓ 價錢沒變", "Price confirmed for today": "已確認今日價格", "Recently deleted": "最近刪除", "Items deleted in the last 30 days. Restore brings the item back with its prices.": "30 日內刪除的商品。按「還原」會連同價格一併還原。", "Restore": "還原", "Nothing deleted recently.": "最近沒有刪除的商品。", "Deleted {0}": "刪除於{0}", "Could not load deleted items.": "無法載入已刪除的商品。"};
+/* Region: the same source builds the Hong Kong page and the Canada page (build.py --region). Only data differs. */
+const REGION=/*REGION*/'hk'/*END*/;
+const REGIONS={
+  hk:{cur:'HK$',pre:'pb-',ls:'household-price-book-v1',place:'Hong Kong',wUnits:['g','kg'],
+    shops:[['hktvmall','HKTVmall','online'],['watsons','Watsons 屈臣氏','store'],['mannings','Mannings 萬寧','store'],['wellcome','Wellcome 惠康','store'],['parknshop','ParknShop 百佳','store']],
+    ex:[[['Throat candy bag','w'],[[0,34,1,150,'g',2],[1,24.9,1,150,'g',9],[2,19.9,1,150,'g',41]]],
+        [['Laundry liquid','v'],[[0,79.9,1,3,'L',3],[1,52,1,1800,'ml',5],[2,84.9,1,3,'L',12]]],
+        [['Toilet tissue','c'],[[0,48,1,24,'pc',1],[3,55,1,24,'pc',6]]]]},
+  ca:{cur:'CA$',pre:'pb-ca-',ls:'household-price-book-ca-v1',place:'Canada',wUnits:['g','kg','lb','oz'],
+    shops:[['walmart','Walmart','store'],['costco','Costco','store'],['nofrills','No Frills','store'],['loblaws','Loblaws','store'],['metro','Metro','store'],['foodbasics','Food Basics','store'],['farmboy','Farm Boy','store'],['gianttiger','Giant Tiger','store'],['shoppers','Shoppers Drug Mart','store'],['amazon','Amazon.ca','online'],['instacart','Instacart','online']],
+    ex:[[['Throat candy bag','w'],[[9,7.49,1,150,'g',2],[8,5.49,1,150,'g',9],[0,3.97,1,150,'g',41]]],
+        [['Laundry liquid','v'],[[9,21.99,1,3,'L',3],[0,14.97,1,3,'L',5],[1,27.99,1,5.4,'L',12]]],
+        [['Toilet tissue','c'],[[9,29.99,1,24,'pc',1],[2,21.99,1,24,'pc',6]]]]}
+};
+const REG=REGIONS[REGION]||REGIONS.hk,CUR=REG.cur;
 const ICON={
   cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>',
   auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/></svg>',
@@ -252,35 +269,29 @@ function applyTheme(){
 applyTheme();
 let LANG='en';
 try{const sv=localStorage.getItem('pb-lang');LANG=sv==='zh'||sv==='en'?sv:((navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en')}catch{}
-const tr=(k,...a)=>{const v=LANG==='zh'&&ZH[k]!==undefined?ZH[k]:k;return v.replace(/\{(\d+)\}/g,(m,i)=>a[+i]??'')};
+const tr=(k,...a)=>{const v=LANG==='zh'&&ZH[k]!==undefined?ZH[k]:k;return v.replace(/\{(\d+)\}/g,(m,i)=>a[+i]??'').replace(/HK\$/g,CUR)};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const today=()=>ymd(new Date());
-const UNITS={w:['g','kg'],v:['ml','L'],c:['pc']};
-const FACTOR={g:1,kg:1000,ml:1,L:1000,pc:1};
-const TYPE_OF={g:'w',kg:'w',ml:'v',L:'v',pc:'c'};
+const UNITS={w:REG.wUnits,v:['ml','L'],c:['pc']};
+const FACTOR={g:1,kg:1000,lb:453.592,oz:28.3495,ml:1,L:1000,pc:1};
+const TYPE_OF={g:'w',kg:'w',lb:'w',oz:'w',ml:'v',L:'v',pc:'c'};
 const PER={w:{n:100,label:'/100g',base:'g'},v:{n:100,label:'/100ml',base:'ml'},c:{n:1,get label(){return tr('/pc')},base:'pc'}};
 const TYPE_LABEL={w:'compared by weight',v:'compared by volume',c:'compared by count'};
 const typeLabel=ty=>tr(TYPE_LABEL[ty]);
 const uShow=u=>u==='pc'?tr('pc'):u;
 const cap=x=>LANG==='en'&&x?x[0].toUpperCase()+x.slice(1):x;
 const STALE_DAYS=30, FRESH_DAYS=14;
-const DEFAULT_SHOPS=[
-  {id:'hktvmall',name:'HKTVmall',kind:'online',fee:0,freeAbove:0},
-  {id:'watsons',name:'Watsons 屈臣氏',kind:'store',fee:0,freeAbove:0},
-  {id:'mannings',name:'Mannings 萬寧',kind:'store',fee:0,freeAbove:0},
-  {id:'wellcome',name:'Wellcome 惠康',kind:'store',fee:0,freeAbove:0},
-  {id:'parknshop',name:'ParknShop 百佳',kind:'store',fee:0,freeAbove:0}
-];
-const LS_KEY='household-price-book-v1';
+const DEFAULT_SHOPS=REG.shops.map(([id,name,kind])=>({id,name,kind,fee:0,freeAbove:0}));
+const LS_KEY=REG.ls;
 
-const S={items:[],shops:DEFAULT_SHOPS.map(s=>({...s})),tab:'items',q:'',sort:'savings',filter:'all',cat:'all',_cat:'',
+const S={items:[],shops:DEFAULT_SHOPS.map(s=>({...s})),tab:'items',q:'',sort:'savings',filter:'all',cat:'all',_cat:'',trash:[],shopsExists:false,
   open:new Set(),confirm:null,ready:false,mode:'local',db:null,sample:null,dl:null,canScan:false,syncErr:false,
   sheetCtl:null,scanCtl:null,scan:null};
 
 /* ---------- formatting ---------- */
 const fmt=n=>{const r=Math.round(n*100)/100;if(Number.isInteger(r))return String(r);return Math.abs(r*10-Math.round(r*10))<1e-9?r.toFixed(1):r.toFixed(2)};
-const hk=n=>'HK$'+fmt(n);
+const hk=n=>CUR+fmt(n);
 const packText=o=>(o.packs>1?o.packs+'×':'')+fmt(o.qty)+uShow(o.unit);
 const shopOf=id=>S.shops.find(s=>s.id===id)||DEFAULT_SHOPS.find(s=>s.id===id)||{id,name:nameFromPrices(id)||tr('Removed shop'),kind:'store',fee:0,freeAbove:0};
 function nameFromPrices(id){for(const it of S.items)for(const p of it.prices||[])if(p.shop===id&&p.shopName)return p.shopName;return ''}
@@ -381,7 +392,7 @@ function cleanItem(x){
   if(!x||typeof x!=='object'||!x.name)return null;
   const type=['w','v','c'].includes(x.type)?x.type:null;if(!type)return null;
   const prices=(Array.isArray(x.prices)?x.prices:[]).map(cleanPrice).filter(p=>p&&TYPE_OF[p.unit]===type);
-  return {id:String(x.id||uid()),name:String(x.name).slice(0,120),brand:String(x.brand||'').slice(0,60),origin:String(x.origin||'').slice(0,60),type,onList:!!x.onList,need:Math.max(0,num(x.need)),prices:prices.slice(-80),created:num(x.created,Date.now()),photo:cleanPhoto(x.photo),cat:CAT_IDS.includes(x.cat)?x.cat:''};
+  return {id:String(x.id||uid()),name:String(x.name).slice(0,120),brand:String(x.brand||'').slice(0,60),origin:String(x.origin||'').slice(0,60),type,onList:!!x.onList,need:Math.max(0,num(x.need)),prices:prices.sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.t-b.t).slice(-80),created:num(x.created,Date.now()),photo:cleanPhoto(x.photo),cat:CAT_IDS.includes(x.cat)?x.cat:''};
 }
 function cleanShop(s){
   if(!s||!s.id||!s.name)return null;
@@ -390,37 +401,103 @@ function cleanShop(s){
 
 /* ---------- storage ---------- */
 function lsLoad(){try{const r=JSON.parse(localStorage.getItem(LS_KEY)||'null');return r&&typeof r==='object'?r:null}catch{return null}}
-function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({items:S.items,shops:S.shops}))}catch{toast(tr('Storage on this device is full. Download a backup.'))}}
+function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({items:S.items,shops:S.shops,trash:S.trash}))}catch{toast(tr('Storage on this device is full. Download a backup.'))}}
 const chains=new Map();
 function enqueue(key,fn){const prev=chains.get(key)||Promise.resolve();const next=prev.catch(()=>{}).then(fn);chains.set(key,next);return next}
 function fail(e){toast(e&&e.code==='invalid_argument'?tr('You can view this book but not change it. Ask the owner for Contributor access.'):tr('Could not save. Check your connection and try again.'))}
+
+/* Merge-safe saving. The shared item document keeps its prices as an array (same format as before, so older open pages keep working),
+   but instead of overwriting the whole document we send only what changed: changed fields, plus atomic array add/remove for prices.
+   Two people adding prices to the same item at the same moment therefore both survive. BASE remembers what the server last had. */
+const SCALARS=['name','brand','origin','type','onList','need','photo','cat','created'];
+const BASE=new Map();
+const clone=x=>JSON.parse(JSON.stringify(x));
+function noteBase(it,rawById){
+  const sc={},pr={};
+  SCALARS.forEach(k=>{sc[k]=JSON.stringify(it[k]===undefined?null:it[k])});
+  (it.prices||[]).forEach(p=>{pr[p.id]=JSON.stringify(p)});
+  BASE.set(it.id,{sc,pr,raw:rawById});
+}
+function writeItem(it){
+  const ref=S.db.collection('items').doc(it.id),b=BASE.get(it.id),FV=S.db.fv,cur=clone(it);
+  const allRaw=()=>{const r={};cur.prices.forEach(p=>{r[p.id]=p});return r};
+  const full=()=>ref.set(cur).then(()=>noteBase(cur,allRaw()));
+  if(!FV||!b)return full();
+  const sc={};let n=0;
+  SCALARS.forEach(k=>{const v=cur[k]===undefined?null:cur[k];if(JSON.stringify(v)!==b.sc[k]){sc[k]=v;n++}});
+  const have=new Set(cur.prices.map(p=>p.id));
+  const gone=Object.keys(b.pr).filter(id=>!have.has(id));
+  const changed=cur.prices.filter(p=>b.pr[p.id]===undefined||JSON.stringify(p)!==b.pr[p.id]);
+  const rm=[...gone,...changed.filter(p=>b.pr[p.id]!==undefined).map(p=>p.id)];
+  if(rm.some(id=>!b.raw[id]))return full();
+  if(!n&&!rm.length&&!changed.length)return Promise.resolve();
+  const chIds=new Set(changed.map(p=>p.id)),nraw={};
+  cur.prices.forEach(p=>{nraw[p.id]=chIds.has(p.id)||!b.raw[p.id]?p:b.raw[p.id]});
+  let q=Promise.resolve();
+  if(n||rm.length){const u={...sc};if(rm.length)u.prices=FV.arrayRemove(...rm.map(id=>b.raw[id]));q=ref.update(u)}
+  if(changed.length)q=q.then(()=>ref.update({prices:FV.arrayUnion(...changed)}));
+  return q.then(()=>noteBase(cur,nraw),e=>{if(e&&e.code==='not-found')return full();throw e});
+}
 async function saveItem(it){
-  if(S.mode==='shared'){try{await enqueue('i:'+it.id,()=>S.db.collection('items').doc(it.id).set(JSON.parse(JSON.stringify(it))))}catch(e){fail(e)}}
+  if(S.mode==='shared'){try{await enqueue('i:'+it.id,()=>writeItem(it))}catch(e){fail(e)}}
   else lsSave();
 }
-async function removeItem(id){
-  S.items=S.items.filter(i=>i.id!==id);
-  if(S.mode==='shared'){try{await enqueue('i:'+id,()=>S.db.collection('items').doc(id).delete())}catch(e){fail(e)}}
-  else lsSave();
+/* Deleting an item keeps a copy in "Recently deleted" for 30 days (shared book: a trash collection; this-device mode: inside the saved data). */
+const TRASH_DAYS=30;
+async function removeItem(id,keep){
+  S.items=S.items.filter(i=>i.id!==id);BASE.delete(id);
+  const rec=keep?{...clone(keep),deletedAt:Date.now()}:null;
+  if(S.mode==='shared'){
+    try{await enqueue('i:'+id,async()=>{
+      if(rec)try{await S.db.collection('trash').doc(id).set(rec)}catch{}
+      await S.db.collection('items').doc(id).delete();
+    })}catch(e){fail(e)}
+  }else{
+    if(rec)S.trash=[rec,...S.trash.filter(x=>x.id!==id)].slice(0,30);
+    lsSave();
+  }
 }
-async function saveShops(){
-  if(S.mode==='shared'){try{await enqueue('shops',()=>S.db.doc('meta/shops').set({list:JSON.parse(JSON.stringify(S.shops))}))}catch(e){fail(e)}}
-  else lsSave();
+async function restoreItem(rec){
+  const it=cleanItem(rec);if(!it)return;
+  if(!S.items.some(i=>i.id===it.id))S.items.push(it);
+  await saveItem(it);
+  if(S.mode==='shared'){try{await S.db.collection('trash').doc(it.id).delete()}catch{}}
+  else{S.trash=S.trash.filter(x=>x.id!==it.id);lsSave()}
+}
+async function loadTrash(){
+  const cutoff=Date.now()-TRASH_DAYS*864e5;let list=[];
+  if(S.mode==='shared'){
+    if(typeof S.db.collection('trash').get!=='function')throw new Error('unsupported');
+    const snap=await S.db.collection('trash').get();
+    list=snap.docs.map(d=>({...clone(d.data()),id:d.id}));
+    list.filter(r=>!(num(r.deletedAt)>=cutoff)).forEach(r=>{try{S.db.collection('trash').doc(r.id).delete()}catch{}});
+  }else list=S.trash.slice();
+  return list.filter(r=>num(r.deletedAt)>=cutoff).sort((a,b)=>b.deletedAt-a.deletedAt);
+}
+async function saveShops(added){
+  if(S.mode==='shared'){
+    try{await enqueue('shops',()=>{
+      const ref=S.db.doc('meta/shops'),FV=S.db.fv;
+      const full=()=>ref.set({list:clone(S.shops)}).then(()=>{S.shopsExists=true});
+      if(added&&FV&&S.shopsExists)return ref.update({list:FV.arrayUnion(clone(added))}).catch(e=>{if(e&&e.code==='not-found')return full();throw e});
+      return full();
+    })}catch(e){fail(e)}
+  }else lsSave();
 }
 function commit(it){saveItem(it);render()}
 
 /* ---------- toast ---------- */
 let toastTimer=0;
-function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true},3600)}
+function toast(msg,undo){
+  const t=$('#toast');t.textContent=msg;
+  if(undo){const b=document.createElement('button');b.type='button';b.className='toast-act';b.textContent=undo.label;b.addEventListener('click',()=>{t.hidden=true;clearTimeout(toastTimer);undo.fn()});t.append(' ',b)}
+  t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true},undo?9000:3600);
+}
 
 /* ---------- examples (shown only while the book is empty) ---------- */
 function examples(){
   const mk=(shop,price,packs,qty,unit,ago,note)=>{const d=new Date();d.setDate(d.getDate()-ago);return {id:uid(),t:Date.now()-ago*864e5,shop,price,packs,qty,unit,base:packs*qty*FACTOR[unit],date:ymd(d),note:note||''}};
-  return [
-    {id:'ex1',name:tr('Throat candy bag'),brand:tr('Example brand'),origin:'',type:'w',onList:false,need:0,prices:[mk('hktvmall',34,1,150,'g',2),mk('watsons',24.9,1,150,'g',9),mk('mannings',19.9,1,150,'g',41)]},
-    {id:'ex2',name:tr('Laundry liquid'),brand:tr('Example brand'),origin:'',type:'v',onList:false,need:0,prices:[mk('hktvmall',79.9,1,3,'L',3),mk('watsons',52,1,1800,'ml',5),mk('mannings',84.9,1,3,'L',12)]},
-    {id:'ex3',name:tr('Toilet tissue'),brand:tr('Example brand'),origin:'',type:'c',onList:false,need:0,prices:[mk('hktvmall',48,1,24,'pc',1),mk('wellcome',55,1,24,'pc',6)]}
-  ];
+  return REG.ex.map(([[name,type],rows],i)=>({id:'ex'+(i+1),name:tr(name),brand:tr('Example brand'),origin:'',type,onList:false,need:0,prices:rows.map(([si,price,packs,qty,unit,ago])=>mk(DEFAULT_SHOPS[si].id,price,packs,qty,unit,ago))}));
 }
 
 /* ---------- views ---------- */
@@ -433,7 +510,7 @@ function offerRow(o,type,i,stale,editable,itemId){
     <div class="o-main"><span class="o-shop">${esc(sh.name)}<span class="mini">${sh.kind==='online'?tr('Delivers'):tr('In store')}</span></span>
     <span class="o-price">${hk(o.price)}<span>${esc(packText(o))}</span></span></div>
     <div class="o-sub"><span class="o-unit">${hk(perUnit(o,type))}${per.label}${extra?' · '+extra:''}</span>
-    <span class="o-act"><span class="age ${f}">${ageText(a)}${f==='stale'?' · '+tr('recheck'):''}</span>${editable?links:''}${editable?`<button class="link" data-act="upd" data-id="${esc(itemId)}" data-pid="${esc(o.id)}">${tr('Update')}</button>`:''}</span></div>
+    <span class="o-act"><span class="age ${f}">${ageText(a)}${f==='stale'?' · '+tr('recheck'):''}</span>${editable?links:''}${editable?`${a>0?`<button class="link" data-act="same" data-id="${esc(itemId)}" data-pid="${esc(o.id)}">${tr('✓ Same price')}</button>`:''}<button class="link" data-act="upd" data-id="${esc(itemId)}" data-pid="${esc(o.id)}">${tr('Update')}</button>`:''}</span></div>
   </li>`;
 }
 function card(it,a,ex){
@@ -444,7 +521,7 @@ function card(it,a,ex){
   if(!ex)h+=`<button class="listbtn" data-act="list" data-id="${esc(it.id)}" aria-pressed="${!!it.onList}">${it.onList?tr('On list'):tr('Add to list')}</button>`;
   h+='</div>';
   if(a.best){
-    h+=`<div class="best"><span class="tag"><small>HK$</small>${fmt(perUnit(a.best,it.type))}<small>${per.label}</small></span><span class="best-meta">${esc(shopOf(a.best.shop).name)} · ${ageText(bestAge)}</span></div>`;
+    h+=`<div class="best"><span class="tag"><small>${CUR}</small>${fmt(perUnit(a.best,it.type))}<small>${per.label}</small></span><span class="best-meta">${esc(shopOf(a.best.shop).name)} · ${ageText(bestAge)}</span></div>`;
     if(a.offers.length>1)h+=`<p class="spread">${tr('Cheapest is {0}% below the priciest.',Math.round(a.spread*100))}${bestAge>STALE_DAYS?' '+tr('The best price is old, recheck it.'):''}</p>`;
     h+=`<ul class="offers">${a.offers.map((o,i)=>offerRow(o,it.type,i,ageDays(o.date)>STALE_DAYS,!ex,it.id)).join('')}</ul>`;
   }else h+='<p class="muted">'+tr('No prices yet.')+'</p>';
@@ -471,6 +548,7 @@ function viewItems(){
   else if(S.sort==='stale')rows.sort((x,y)=>y.a.oldest-x.a.oldest);
   else if(S.sort==='cat'){const ci=x=>{const i=CAT_IDS.indexOf(x.it.cat);return i<0?99:i};rows.sort((x,y)=>ci(x)-ci(y)||x.it.name.localeCompare(y.it.name))}
   else rows.sort((x,y)=>y.a.spread-x.a.spread);
+  if(S.filter==='recheck')rows.sort((x,y)=>(y.it.onList?1:0)-(x.it.onList?1:0));
   let h='';
   if(ex)h+=`<div class="banner"><strong>${tr('These are example items.')}</strong><span>${tr('They show how the book compares shops by price per 100g, per 100ml or per piece. Add your first item and they disappear.')}</span></div>`;
   if(!rows.length)h+=`<div class="empty"><h2>${tr('Nothing here')}</h2><p>${S.filter==='list'?tr('No items are on your list yet.'):S.filter==='recheck'?tr('Every price is under {0} days old.',STALE_DAYS):tr('No items match your search.')}</p></div>`;
@@ -510,7 +588,7 @@ function viewShops(){
   const where=S.mode==='shared'?tr('Your items are saved to the shared book, so everyone with access sees updates live.'):tr('Your items are saved in this browser only. Download a backup now and then.');
   return `<section class="card"><h2 class="sec">${tr('Shops')}</h2><p class="spread">${tr('Enter each online shop’s usual delivery fee and free-delivery minimum so the basket compares real totals.')}</p>${rows}
     <div class="shop"><div class="grid2"><label class="f"><span>${tr('New shop')}</span><input id="ns-name" placeholder="${esc(tr('e.g. Donki, 759'))}"></label><label class="f"><span>${tr('Type')}</span><select id="ns-kind"><option value="store">${tr('Physical store')}</option><option value="online">${tr('Online, delivers')}</option></select></label></div><div><button class="btn small" data-act="shopadd">${tr('Add shop')}</button></div></div></section>
-    ${hostedCard()}<section class="card"><h2 class="sec">${tr('Backup')}</h2><p class="spread">${where}</p><div class="foot">${S.dl?'<button class="btn small" data-act="dl">'+tr('Download backup')+'</button>':''}<button class="btn small ghost" data-act="copy">${tr('Copy backup')}</button><button class="btn small ghost" data-act="restore">${tr('Restore from file')}</button></div></section>`;
+    ${hostedCard()}<section class="card"><h2 class="sec">${tr('Backup')}</h2><p class="spread">${where}</p><div class="foot">${S.dl?'<button class="btn small" data-act="dl">'+tr('Download backup')+'</button>':''}<button class="btn small ghost" data-act="copy">${tr('Copy backup')}</button><button class="btn small ghost" data-act="restore">${tr('Restore from file')}</button><button class="btn small ghost" data-act="trash">${tr('Recently deleted')}</button></div></section>`;
 }
 
 let pendingRender=false;
@@ -630,7 +708,7 @@ function resolveShop(r){
   if(!sh){
     let id=key.replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'shop';
     if(S.shops.some(x=>x.id===id))id+='-'+uid().slice(-4);
-    sh={id,name,kind,fee:0,freeAbove:0};S.shops.push(sh);saveShops();
+    sh={id,name,kind,fee:0,freeAbove:0};S.shops.push(sh);saveShops(sh);
   }
   r.shop=sh.id;r.shopName=sh.name;return r;
 }
@@ -740,7 +818,7 @@ const scanErr=c=>tr({not_granted:'Photo reading was not allowed for this page.',
 function buildPrompt(){
   const items=S.items.slice(0,200).map(i=>i.id+': '+i.name+(i.brand?' ('+i.brand+')':'')+' ['+TYPE_LABEL[i.type]+']').join('\n')||'(none yet)';
   const shops=S.shops.map(s=>s.name).join(', ');
-  return `You are reading a photo taken in Hong Kong. It shows a supermarket or pharmacy shelf price tag, a product package, or a shop receipt. Names may be in Chinese or English; keep product names as printed.
+  return `You are reading a photo taken in ${REG.place}. It shows a supermarket or pharmacy shelf price tag, a product package, or a shop receipt. Names may be in Chinese or English; keep product names as printed.
 
 Existing items in the user's price book (id: name [how it is compared]):
 ${items}
@@ -750,7 +828,7 @@ Known shops: ${shops}
 Reply with only this JSON, no other text:
 {"shop": one of the known shop names if the store is clearly identifiable, otherwise null,
  "date": "YYYY-MM-DD" if a date is printed, otherwise null,
- "lines": [{"name": string, "brand": string or null, "price": number in HK$ for the packs described, "packs": number of packs that price covers (usually 1; 2 for "2 for $30"), "qty": size of ONE pack as a number or null, "unit": one of "g","kg","ml","L","pc" or null, "matchId": id of an existing item that is clearly the same product, otherwise null, "note": other prices shown (member price, bundle deal) or null}]}
+ "lines": [{"name": string, "brand": string or null, "price": number in ${CUR} for the packs described, "packs": number of packs that price covers (usually 1; 2 for "2 for $30"), "qty": size of ONE pack as a number or null, "unit": one of "g","kg","ml","L","pc" or null, "matchId": id of an existing item that is clearly the same product, otherwise null, "note": other prices shown (member price, bundle deal) or null}]}
 
 Rules: never guess a price. Skip lines that are not products (totals, discounts, tax, bags). If the size is not visible, set qty and unit to null. Use the price shown most prominently and describe any other price in note.`;
 }
@@ -786,7 +864,7 @@ function rowHtml(r,i){
   const items=S.items.map(x=>`<option value="${esc(x.id)}" ${x.id===r.matchId?'selected':''}>${esc(x.name)}${x.brand?' · '+esc(x.brand):''}</option>`).join('');
   return `<div class="srow"><div class="srow-h"><input type="checkbox" data-r="${i}" data-k="on" ${r.on?'checked':''} aria-label="${esc(tr('Include this line'))}"><input data-r="${i}" data-k="name" value="${esc(r.name)}" aria-label="${esc(tr('Product name'))}"></div>
     <select data-r="${i}" data-k="matchId" aria-label="${esc(tr('Which item is this'))}"><option value="">${tr('New item')}</option>${items}</select>
-    <div class="grid3"><input type="number" step="0.01" min="0" inputmode="decimal" data-r="${i}" data-k="price" value="${r.price}" placeholder="HK$" aria-label="${esc(tr('Price'))}">
+    <div class="grid3"><input type="number" step="0.01" min="0" inputmode="decimal" data-r="${i}" data-k="price" value="${r.price}" placeholder="${CUR}" aria-label="${esc(tr('Price'))}">
     <input type="number" step="1" min="1" inputmode="numeric" data-r="${i}" data-k="packs" value="${r.packs}" aria-label="${esc(tr('Packs'))}">
     <div class="inline"><input type="number" step="any" min="0" inputmode="decimal" data-r="${i}" data-k="qty" value="${r.qty}" placeholder="${esc(tr('Size'))}" aria-label="${esc(tr('Size of one pack'))}"><select data-r="${i}" data-k="unit" aria-label="${esc(tr('Unit'))}">${r.unit?'':`<option value="">${tr('Unit')}</option>`}${units.map(u=>`<option value="${u}" ${u===r.unit?'selected':''}>${uShow(u)}</option>`).join('')}</select></div></div>
     ${r.note?`<span class="spread">${esc(r.note)}</span>`:''}</div>`;
@@ -842,6 +920,19 @@ function applyScan(){
 
 /* ---------- backup ---------- */
 const backupJson=()=>JSON.stringify({app:'household-price-book',version:1,exported:new Date().toISOString(),shops:S.shops,items:S.items},null,2);
+function trashSheet(){
+  openSheet(`<h2>${tr('Recently deleted')}</h2><p class="spread">${tr('Items deleted in the last 30 days. Restore brings the item back with its prices.')}</p><div id="trash-body"><div class="spin" aria-hidden="true"></div></div><div class="row-end"><button class="btn" data-close>${tr('Done')}</button></div>`,(p,sig)=>{
+    const body=()=>p.querySelector('#trash-body');
+    let list=[];
+    const draw=()=>{const b=body();if(!b)return;b.innerHTML=list.length?list.map(r=>`<div class="trash-row"><span><strong>${esc(r.name||'')}</strong><br><span class="spread">${esc(r.brand||'')}${r.brand?' · ':''}${esc(tr('Deleted {0}',ageText(ageDays(ymd(new Date(r.deletedAt))))))}</span></span><button class="btn small ghost" data-restore="${esc(r.id)}">${tr('Restore')}</button></div>`).join(''):`<p class="muted">${tr('Nothing deleted recently.')}</p>`};
+    loadTrash().then(l=>{list=l;draw()}).catch(()=>{const b=body();if(b)b.innerHTML=`<p class="warn">${tr('Could not load deleted items.')}</p>`});
+    p.addEventListener('click',async e=>{
+      const btn=e.target.closest('[data-restore]');if(!btn)return;
+      const rec=list.find(r=>r.id===btn.dataset.restore);if(!rec)return;
+      btn.disabled=true;await restoreItem(rec);list=list.filter(r=>r.id!==rec.id);draw();render();toast(tr('Item restored'));
+    },sig);
+  });
+}
 async function restoreFrom(file){
   try{
     const data=JSON.parse(await file.text());
@@ -859,7 +950,7 @@ async function restoreFrom(file){
 /* ---------- events ---------- */
 function act(a,d){
   const it=d.id&&S.items.find(i=>i.id===d.id);
-  if(['list','upd','addprice','edit','toggle','del','histdel','photo'].includes(a)&&!it)return;
+  if(['list','upd','addprice','edit','toggle','del','histdel','photo','same'].includes(a)&&!it)return;
   switch(a){
     case 'list':it.onList=!it.onList;if(it.onList&&!(it.need>0))it.need=analyze(it).best?.base||1;commit(it);break;
     case 'upd':priceSheet(it,d.pid);break;
@@ -868,16 +959,22 @@ function act(a,d){
     case 'photo':photoSheet(it);break;
     case 'toggle':S.open.has(it.id)?S.open.delete(it.id):S.open.add(it.id);render();break;
     case 'del':
-      if(S.confirm===it.id){S.confirm=null;S.open.delete(it.id);removeItem(it.id);render();toast(tr('Item deleted'))}
+      if(S.confirm===it.id){S.confirm=null;S.open.delete(it.id);const keep=clone(it);removeItem(it.id,keep);render();toast(tr('Item deleted'),{label:tr('Undo'),fn:()=>{restoreItem(keep).then(()=>{render();toast(tr('Item restored'))})}})}
       else{S.confirm=it.id;render();setTimeout(()=>{if(S.confirm===it.id){S.confirm=null;render()}},4000)}
       break;
-    case 'histdel':it.prices=it.prices.filter(p=>p.id!==d.pid);commit(it);break;
+    case 'histdel':{
+      const before=it.prices.slice();it.prices=it.prices.filter(p=>p.id!==d.pid);commit(it);
+      toast(tr('Price deleted'),{label:tr('Undo'),fn:()=>{const cur=S.items.find(i=>i.id===it.id);if(cur){cur.prices=before;commit(cur)}}});break}
+    case 'same':{
+      const pr=it.prices.find(x=>x.id===d.pid);if(!pr)break;
+      addEntry(it,{...pr,id:uid(),t:Date.now(),date:today()});commit(it);toast(tr('Price confirmed for today'));break}
+    case 'trash':trashSheet();break;
     case 'gotoitems':S.tab='items';render();break;
     case 'shopadd':{
       const name=($('#ns-name').value||'').trim();if(!name){toast(tr('Enter a shop name.'));return}
       let id=name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'shop';
       if(S.shops.some(s=>s.id===id))id+='-'+uid().slice(-4);
-      S.shops.push({id,name,kind:$('#ns-kind').value,fee:0,freeAbove:0});saveShops();render();break;
+      const ns={id,name,kind:$('#ns-kind').value,fee:0,freeAbove:0};S.shops.push(ns);saveShops(ns);render();break;
     }
     case 'shopdel':S.shops=S.shops.filter(s=>s.id!==d.id);saveShops();render();break;
     case 'dl':S.dl.save({filename:'price-book-'+today()+'.json',data:backupJson()}).then(()=>toast(tr('Backup saved'))).catch(e=>{if(e?.code!=='declined')toast(tr('Could not save the backup file.'))});break;
@@ -922,7 +1019,7 @@ function wire(){
 }
 
 /* Hosted build: shared family book on Firebase Firestore. */
-const CODE_KEY='pb-share-code',SKIP_KEY='pb-skip-share';
+const CODE_KEY=REG.pre+'share-code',SKIP_KEY=REG.pre+'skip-share';
 const CODE_RE=/^[A-Za-z0-9]{20,64}$/;
 const hostedOn=()=>!!(window.PB_FIREBASE&&window.firebase);
 function getCode(){
@@ -954,7 +1051,7 @@ function hostedInit(){
     if(!firebase.apps.length)firebase.initializeApp(window.PB_FIREBASE);
     const fs=firebase.firestore();
     S.code=code;S.localSeed=lsLoad();
-    return {collection:p=>fs.collection('books/'+code+'/'+p),doc:p=>fs.doc('books/'+code+'/'+p)};
+    return {collection:p=>fs.collection('books/'+code+'/'+p),doc:p=>fs.doc('books/'+code+'/'+p),fv:firebase.firestore.FieldValue};
   }catch{return null}
 }
 function hostedMigrate(snap){
@@ -1034,10 +1131,17 @@ async function boot(){
   if(db){
     S.mode='shared';S.db=db;
     db.collection('items').onSnapshot(snap=>{
-      S.items=snap.docs.map(d=>cleanItem({...JSON.parse(JSON.stringify(d.data())),id:d.id})).filter(Boolean);
+      const seen=new Set();
+      S.items=snap.docs.map(d=>{
+        const raw=clone(d.data()),it=cleanItem({...raw,id:d.id});if(!it)return null;
+        const rawById={};(Array.isArray(raw.prices)?raw.prices:[]).forEach(x=>{if(x&&x.id!=null)rawById[String(x.id)]=x});
+        noteBase(it,rawById);seen.add(it.id);return it;
+      }).filter(Boolean);
+      [...BASE.keys()].forEach(k=>{if(!seen.has(k))BASE.delete(k)});
       S.ready=true;S.syncErr=false;hostedMigrate(snap);render(true);
     },()=>{S.syncErr=true;S.ready=true;render()});
     db.doc('meta/shops').onSnapshot(s=>{
+      S.shopsExists=!!s.exists;
       const list=s.exists&&Array.isArray(s.data().list)?s.data().list.map(cleanShop).filter(Boolean):[];
       S.shops=list.length?JSON.parse(JSON.stringify(list)):DEFAULT_SHOPS.map(x=>({...x}));
       render(true);
@@ -1048,6 +1152,7 @@ async function boot(){
       S.items=(Array.isArray(saved.items)?saved.items:[]).map(cleanItem).filter(Boolean);
       const sh=(Array.isArray(saved.shops)?saved.shops:[]).map(cleanShop).filter(Boolean);
       if(sh.length)S.shops=sh;
+      S.trash=(Array.isArray(saved.trash)?saved.trash:[]).filter(r=>r&&r.name&&r.deletedAt).slice(0,30);
     }
     S.ready=true;render();
   }
