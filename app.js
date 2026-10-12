@@ -1,0 +1,1 @@
+const ctx=document.getElementById("trend");new Chart(ctx,{type:"line",data:{labels:["May","Jun","Jul","Aug","Sep","Oct"],datasets:[{label:"Egg Prices",data:[35,34,33,32,31,29.9]}]}});
