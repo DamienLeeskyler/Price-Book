@@ -21,18 +21,19 @@
 <style>
 /* Layout: one column of item cards under a sticky tab bar; forms open as bottom sheets. A shelf-tag yellow chip marks the best unit price; everything else stays quiet. */
 :root{
-  --bg:#EEF1EF; --surface:#FFFFFF; --surface-2:#E5EAE7; --ink:#13201C; --muted:#586964; --line:#D2DAD6;
+  --bg:#F6F3EC; --surface:#FFFFFF; --surface-2:#EEE9DD; --ink:#1B2A23; --muted:#5C6A62; --line:#E4DDCD;
   --tag:#FFD43B; --tag-ink:#2A2200;
-  --primary:#13201C; --primary-ink:#FFFFFF;
+  --primary:#1F6B4A; --primary-ink:#FFFFFF; --accent-soft:#E3F1E9;
   --fresh:#1B6F45; --aging:#8F5A00; --stale:#66756F; --bad:#B3261E;
-  --fresh-bg:#DCF0E4; --aging-bg:#FAEAC6; --stale-bg:#E2E7E4;
+  --fresh-bg:#DCF0E4; --aging-bg:#FAEAC6; --stale-bg:#ECE8DD;
+  --shadow:0 1px 2px rgba(40,30,10,.06),0 4px 14px rgba(40,30,10,.07);
   --display:"Barlow Condensed","Arial Narrow","PingFang HK","Noto Sans HK","Microsoft JhengHei",sans-serif;
   --body:"Figtree","PingFang HK","Noto Sans HK","Microsoft JhengHei",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0F1513; --surface:#172220; --surface-2:#1F2D2A; --ink:#E8F0ED; --muted:#9CAEA7; --line:#2B3B37;
-    --primary:#E8F0ED; --primary-ink:#0F1513;
+    --bg:#0E1512; --surface:#16211D; --surface-2:#1F2D28; --ink:#E8F0ED; --muted:#9CAEA7; --line:#2A3A34;
+    --primary:#5FCB94; --primary-ink:#08140E; --accent-soft:#17352A; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
     --fresh:#6FD39C; --aging:#F0B54E; --stale:#8FA19A; --bad:#FF8A80;
     --fresh-bg:#17352A; --aging-bg:#3A2D12; --stale-bg:#222E2B;
     color-scheme:dark;
@@ -40,8 +41,8 @@
 }
 :root[data-theme="light"]{color-scheme:light}
 :root[data-theme="dark"]{
-  --bg:#0F1513; --surface:#172220; --surface-2:#1F2D2A; --ink:#E8F0ED; --muted:#9CAEA7; --line:#2B3B37;
-  --primary:#E8F0ED; --primary-ink:#0F1513;
+  --bg:#0E1512; --surface:#16211D; --surface-2:#1F2D28; --ink:#E8F0ED; --muted:#9CAEA7; --line:#2A3A34;
+  --primary:#5FCB94; --primary-ink:#08140E; --accent-soft:#17352A; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
   --fresh:#6FD39C; --aging:#F0B54E; --stale:#8FA19A; --bad:#FF8A80;
   --fresh-bg:#17352A; --aging-bg:#3A2D12; --stale-bg:#222E2B;
   color-scheme:dark;
@@ -191,6 +192,58 @@ textarea{font:inherit;width:100%;min-height:160px;background:var(--surface);colo
   .hist-row{padding-block:2px}
 }
 .panel{overscroll-behavior:contain;max-height:92vh;max-height:92dvh}
+
+/* ---- v2 skin: warmer, rounder, thumb-friendly ---- */
+body{padding-block:0 96px;background-image:radial-gradient(900px 260px at 50% -80px,var(--accent-soft),transparent)}
+.top{padding-block:20px 12px}
+h1{font-size:30px;position:relative;padding-left:44px}
+h1::before{content:"";position:absolute;left:0;top:50%;width:34px;height:34px;transform:translateY(-50%);border-radius:10px;background:var(--primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h2l2 11h11l2-8H6'/%3E%3Ccircle cx='9' cy='20' r='1.2'/%3E%3Ccircle cx='17' cy='20' r='1.2'/%3E%3C/svg%3E") center/20px no-repeat}
+.pill{border:1px solid var(--line);background:var(--surface)}
+.pill.live{border-color:transparent}
+.card{border-radius:16px;box-shadow:var(--shadow);border-color:transparent;padding:16px}
+.card.is-example{border:1px dashed var(--line);box-shadow:none}
+input,select,textarea{border-radius:12px;background:var(--surface)}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn{border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.btn.ghost{box-shadow:none;background:var(--surface)}
+.chip,.listbtn{background:var(--surface)}
+.chip[aria-pressed="true"],.listbtn[aria-pressed="true"],.seg input:checked+span{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.thumb{border-radius:12px}
+.tag{border-radius:6px 14px 14px 6px;position:relative;padding-left:16px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.tag::before{content:"";position:absolute;left:5px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:rgba(0,0,0,.28)}
+.best-meta{color:var(--fresh)}
+.offer:first-child{border-top:0}
+.offers .offer:first-child .o-price{color:var(--fresh)}
+.offer.stale .o-price{color:var(--muted)}
+.banner{border-radius:14px;background:var(--accent-soft)}
+.sheet{backdrop-filter:blur(3px)}
+.panel{border-radius:22px 22px 0 0}
+.panel::before{content:"";justify-self:center;width:40px;height:4px;border-radius:4px;background:var(--line);margin:-6px 0 2px}
+.toast{bottom:calc(86px + env(safe-area-inset-bottom,0px));border-radius:14px;box-shadow:var(--shadow)}
+/* tab bar: bottom on phones (thumb reach), top pill bar on wide screens */
+.tabs{position:fixed;left:0;right:0;bottom:0;top:auto;margin:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));gap:6px;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line);border-bottom:0;z-index:15}
+.tabs button{min-height:48px;border-radius:14px;font-size:14px;max-width:240px;margin-inline:auto}
+.tabs button[aria-selected="true"]{background:var(--accent-soft);color:var(--primary);box-shadow:inset 0 0 0 1.5px var(--primary)}
+@media (min-width:640px){
+  body{padding-block:0 48px}
+  .tabs{position:sticky;top:env(safe-area-inset-top,0px);bottom:auto;margin-inline:-16px;padding:10px 16px;background:var(--bg);backdrop-filter:none;border-top:0;border-bottom:1px solid var(--line)}
+  .tabs button{max-width:none}
+  .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+}
+
+/* narrow-phone fixes for the v2 skin */
+.top{flex-wrap:wrap}
+h1{flex:1 1 200px;min-width:0}
+.top-r{max-width:100%}
+.tabs button{padding-inline:4px;white-space:nowrap;font-size:14px}
+.o-act{flex-wrap:wrap}
+.o-act .link{white-space:nowrap}
+@media (max-width:420px){
+  h1{font-size:24px;padding-left:38px}
+  h1::before{width:28px;height:28px;border-radius:8px;background-size:17px}
+  .tabs{padding-inline:8px}
+  .tabs button{font-size:13px}
+}
 </style>
 
 <div class="wrap">
